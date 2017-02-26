@@ -1,9 +1,11 @@
 package com.csjbot.welcomebot_zkhl;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
@@ -11,7 +13,9 @@ import android.support.v7.widget.AppCompatEditText;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.csjbot.welcomebot_zkhl.entity.GetTypeBean;
@@ -95,7 +99,19 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     LinearLayout llAuto;
     @BindView(R.id.activity_main)
     LinearLayout activityMain;
+    @BindView(R.id.btnGotoHardCtrl)
+    Button btnGotoHardCtrl;
+    @BindView(R.id.btnGotoPic)
+    Button btnGotoPic;
+    @BindView(R.id.btnGotoPrint)
+    Button btnGotoPrint;
+    @BindView(R.id.flModule)
+    FrameLayout flModule;
+    @BindView(R.id.llModule)
+    LinearLayout llModule;
 
+
+    private long lastBackPressTime;
     private boolean upStop;
     private String moveString = "";
     private boolean isPutHand, isPutLeftHand;
@@ -108,6 +124,8 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     private String[] preSetPoints = new String[]{"预设点零", "预设点一", "预设点二", "预设点三", "预设点四"};
     private SharePreferenceTools sharePreferenceTools;
     private int selectPose = -1;
+
+    private int showModuleIndex = 0;
 
     /**
      * Called when a touch event is dispatched to a view. This allows listeners to
@@ -411,7 +429,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             R.id.btn_left,
             R.id.btn_go,
             R.id.btn_up,
-            R.id.btn_stop, R.id.btn_down, R.id.btn_right})
+            R.id.btn_stop, R.id.btn_down, R.id.btn_right, R.id.btnGotoPrint, R.id.btnGotoHardCtrl, R.id.btnGotoPic})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnLogin:
@@ -421,9 +439,17 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         btnLogin.setEnabled(false);
                         client.connect(ip, this);
                         btnLogin.setProgress(1);
+                        eetEditText.setEnabled(false);
+                    }
+                    else
+                    {
+                        new AlertDialog.Builder(MainActivity.this).setMessage("IP地址不合法，请重新输入!").show();
+                        btnLogin.requestFocus();
                     }
                 } else {
                     client.closeConnect();
+                    btnLogin.setText("登录");
+                    eetEditText.setEnabled(true);
                 }
                 break;
             case R.id.btn_shake_head:
@@ -733,6 +759,18 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                                 }
                         ).show();
                 break;
+            case R.id.btnGotoHardCtrl:
+                showModuleIndex = 0;
+                switchShowModule();
+                break;
+            case R.id.btnGotoPic:
+                showModuleIndex = 1;
+                switchShowModule();
+                break;
+            case R.id.btnGotoPrint:
+                showModuleIndex = 2;
+                switchShowModule();
+                break;
             default:
                 break;
         }
@@ -757,6 +795,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         mHandler.post(new Runnable() {
             @Override
             public void run() {
+                eetEditText.setEnabled(true);
                 btnLogin.setEnabled(true);
                 btnLogin.setProgress(0);
                 showToast(MainActivity.this, "登录失败");
@@ -767,41 +806,41 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     @Override
     public void recMessage(String msg) {
 //        {"msg_id":"NAVI_ROBOT_MOVE_TO_REQ","pos":{"x":10,"y":235,"z":25,"rotation":157}}
-
-        String msgType = (JSON.parseObject(msg, GetTypeBean.class)).getMsg_id();
-        switch (msgType) {
-            case "NAVI_GET_POS_RSP":
-                NaviGetPoseRspBean bean = JSON.parseObject(msg, NaviGetPoseRspBean.class);
-                Logger.d("bean " + bean.getPos().toString());
-                switch (selectPose) {
-                    case 0:
-                        pose0 = bean.getPos();
-                        sharePreferenceTools.putString("pose0", JSON.toJSONString(pose0));
-                        break;
-                    case 1:
-                        pose1 = bean.getPos();
-                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose1));
-                        break;
-                    case 2:
-                        pose2 = bean.getPos();
-                        sharePreferenceTools.putString("pose2", JSON.toJSONString(pose2));
-                        break;
-                    case 3:
-                        pose3 = bean.getPos();
-                        sharePreferenceTools.putString("pose3", JSON.toJSONString(pose3));
-                        break;
-                    case 4:
-                        pose4 = bean.getPos();
-                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose4));
-                        break;
-                    default:
-                        break;
-                }
-                selectPose = -1;
-                break;
-            default:
-                break;
-        }
+        Logger.d("recMessage: " + msg);
+//        String msgType = (JSON.parseObject(msg, GetTypeBean.class)).getMsg_id();
+//        switch (msgType) {
+//            case "NAVI_GET_POS_RSP":
+//                NaviGetPoseRspBean bean = JSON.parseObject(msg, NaviGetPoseRspBean.class);
+//                Logger.d("bean " + bean.getPos().toString());
+//                switch (selectPose) {
+//                    case 0:
+//                        pose0 = bean.getPos();
+//                        sharePreferenceTools.putString("pose0", JSON.toJSONString(pose0));
+//                        break;
+//                    case 1:
+//                        pose1 = bean.getPos();
+//                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose1));
+//                        break;
+//                    case 2:
+//                        pose2 = bean.getPos();
+//                        sharePreferenceTools.putString("pose2", JSON.toJSONString(pose2));
+//                        break;
+//                    case 3:
+//                        pose3 = bean.getPos();
+//                        sharePreferenceTools.putString("pose3", JSON.toJSONString(pose3));
+//                        break;
+//                    case 4:
+//                        pose4 = bean.getPos();
+//                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose4));
+//                        break;
+//                    default:
+//                        break;
+//                }
+//                selectPose = -1;
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     @Override
@@ -812,6 +851,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 eetEditText.setEnabled(false);
                 btnLogin.setEnabled(true);
                 btnLogin.setProgress(100);
+                btnLogin.setText("断开");
             }
         }, 500);
     }
@@ -823,6 +863,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             public void run() {
                 eetEditText.setEnabled(true);
                 btnLogin.setProgress(0);
+                btnLogin.setText("登录");
             }
         });
     }
@@ -834,4 +875,54 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         PgyUpdateManager.unregister();
     }
 
+
+    private void switchShowModule()
+    {
+        for(int i = 0; i < flModule.getChildCount(); i++)
+        {
+            if (i == showModuleIndex)
+            {
+                flModule.getChildAt(i).setVisibility(View.VISIBLE);
+                llModule.getChildAt(i).setBackgroundColor(Color.parseColor("#5E3D6BE0"));
+            }
+            else
+            {
+                flModule.getChildAt(i).setVisibility(View.INVISIBLE);
+                llModule.getChildAt(i).setBackgroundColor(Color.parseColor("#5e639078"));
+            }
+        }
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if(lastBackPressTime == 0)
+        {
+            Toast.makeText(this, "再按一次返回键退出程序！", Toast.LENGTH_SHORT).show();
+            lastBackPressTime = System.currentTimeMillis();
+            return;
+        }
+        else
+        {
+            if (System.currentTimeMillis() - lastBackPressTime >= 1500)
+            {
+                Toast.makeText(this, "再按一次返回键退出程序！", Toast.LENGTH_SHORT).show();
+                lastBackPressTime = System.currentTimeMillis();
+                return;
+            }
+            else
+            {
+                finish();
+            }
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        switchShowModule();
+    }
 }

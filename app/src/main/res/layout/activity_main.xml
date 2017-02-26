@@ -52,7 +52,7 @@
                 custom:pb_colorNormal="@color/blue_normal"
                 custom:pb_colorPressed="@color/blue_pressed"
                 custom:pb_colorProgress="@color/purple_progress"
-                custom:pb_textComplete="已登录"
+                custom:pb_textComplete="断开"
                 custom:pb_textError="Error"
                 custom:pb_textProgress="登录中..." />
 
@@ -173,166 +173,275 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp">
+        android:orientation="horizontal"
+        >
 
-
+        
         <LinearLayout
-            android:id="@+id/ll_keyboard"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_centerHorizontal="true"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:layout_marginTop="15dp"
-            android:layout_weight="6"
-            android:background="@drawable/keyboard"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/llModule"
+            >
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="操控"
+                    android:id="@+id/btnGotoHardCtrl"
+                    android:background="#5e639078"
+                    />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/btn_shake_head"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="摇头"
-                    android:textColor="#FFFFFF"
-                    android:textSize="30sp" />
-
-                <Button
-                    android:id="@+id/btn_left"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="←"
-                    android:textColor="#FFFFFF"
-                    android:textSize="30sp" />
-
-                <Button
-                    android:id="@+id/btn_bend"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="伸左手"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp" />
-
-
-                <Button
-                    android:id="@+id/btn_go"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="伸右手"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:text="拍照"
+                android:id="@+id/btnGotoPic"
+                android:background="#5e639078"
+                />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/btn_up"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="↑"
-                    android:textColor="#FFFFFF"
-                    android:textSize="30sp" />
-
-                <Button
-                    android:id="@+id/btn_stop"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="停"
-                    android:textColor="#FFFFFF"
-                    android:textSize="30sp" />
-
-                <Button
-                    android:id="@+id/btn_down"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="↓"
-                    android:textColor="#FFFFFF"
-                    android:textSize="30sp" />
-
-
-                <Button
-                    android:id="@+id/btn_setPoint"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="设置预设点"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/btn_3"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="点头"
-                    android:textColor="#FFFFFF"
-                    android:textSize="30sp" />
-
-                <Button
-                    android:id="@+id/btn_right"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="→"
-                    android:textColor="#FFFFFF"
-                    android:textSize="30sp" />
-
-                <Button
-                    android:id="@+id/btn_9"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="单击直立\n长按弯腰"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp" />
-
-
-                <Button
-                    android:id="@+id/btn_gotoPoint"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/keyboard_set_select"
-                    android:text="到达预设点"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp" />
-            </LinearLayout>
+                android:text="打印"
+                android:id="@+id/btnGotoPrint"
+                android:background="#5e639078"
+                />
 
         </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:layout_marginTop="15dp"
+            android:id="@+id/flModule"
+            android:layout_marginLeft="20dp">
+
+            <LinearLayout
+                android:id="@+id/ll_keyboard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:visibility="invisible"
+                android:background="@drawable/keyboard"
+                android:orientation="horizontal">
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btn_shake_head"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="摇头"
+                        android:textColor="#FFFFFF"
+                        android:textSize="30sp" />
+
+                    <Button
+                        android:id="@+id/btn_left"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="←"
+                        android:textColor="#FFFFFF"
+                        android:textSize="30sp" />
+
+                    <Button
+                        android:id="@+id/btn_bend"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="伸左手"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+
+                    <Button
+                        android:id="@+id/btn_go"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="伸右手"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btn_up"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="↑"
+                        android:textColor="#FFFFFF"
+                        android:textSize="30sp" />
+
+                    <Button
+                        android:id="@+id/btn_stop"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="停"
+                        android:textColor="#FFFFFF"
+                        android:textSize="30sp" />
+
+                    <Button
+                        android:id="@+id/btn_down"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="↓"
+                        android:textColor="#FFFFFF"
+                        android:textSize="30sp" />
+
+
+                    <Button
+                        android:id="@+id/btn_setPoint"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="设置预设点"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btn_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="点头"
+                        android:textColor="#FFFFFF"
+                        android:textSize="30sp" />
+
+                    <Button
+                        android:id="@+id/btn_right"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="→"
+                        android:textColor="#FFFFFF"
+                        android:textSize="30sp" />
+
+                    <Button
+                        android:id="@+id/btn_9"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="单击直立\n长按弯腰"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+
+                    <Button
+                        android:id="@+id/btn_gotoPoint"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/keyboard_set_select"
+                        android:text="到达预设点"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center"
+                >
+
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:id="@+id/ivShowPicture"
+                    android:scaleType="fitCenter" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/btnPicture"
+                    android:text="拍照"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                android:orientation="horizontal">
+
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/printTv"
+                    style="@style/txt_lab"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:hint="请输入打印的内容" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btnPrint"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="打印" />
+
+                    <Button
+                        android:id="@+id/btnCut"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="剪切" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+        </FrameLayout>
+
     </LinearLayout>
 
 </LinearLayout>

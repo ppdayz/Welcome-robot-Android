@@ -59,7 +59,7 @@ public class ConnectHandler extends SimpleChannelInboundHandler<String> {
         if (listener != null) {
             listener.recMessage(body);
         }
-        Logger.d("Server : " + body);
+        Logger.d("channelRead : " + body);
     }
 
     /**
@@ -72,6 +72,6 @@ public class ConnectHandler extends SimpleChannelInboundHandler<String> {
      */
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
-        Logger.d("Server : " + msg);
+        Logger.d("messageReceived : " + msg);
     }
 }
