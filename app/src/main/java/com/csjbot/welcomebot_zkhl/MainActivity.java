@@ -14,10 +14,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.csjbot.welcomebot_zkhl.entity.GetTypeBean;
 import com.csjbot.welcomebot_zkhl.entity.NaviGetPoseRspBean;
 import com.csjbot.welcomebot_zkhl.servers.ConnectWithNetty;
@@ -26,8 +30,15 @@ import com.csjbot.welcomebot_zkhl.servers.nettyHandler.ConnectHandler;
 import com.csjbot.welcomebot_zkhl.utils.Constants;
 import com.csjbot.welcomebot_zkhl.utils.SharePreferenceTools;
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.orhanobut.logger.Logger;
 import com.pgyersdk.update.PgyUpdateManager;
+import android.view.Window;
+import android.view.WindowManager;
+
+import org.json.JSONObject;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -38,6 +49,10 @@ import butterknife.OnClick;
 
 import static com.csjbot.welcomebot_zkhl.CSJToast.showToast;
 import static com.csjbot.welcomebot_zkhl.R.id.btn_up;
+import static com.csjbot.welcomebot_zkhl.R.id.flBottom;
+import static com.csjbot.welcomebot_zkhl.R.id.flMiddle1;
+import static com.csjbot.welcomebot_zkhl.R.id.flMiddle2;
+import static com.csjbot.welcomebot_zkhl.R.id.ivShowPicture;
 
 
 public class MainActivity extends Activity implements ConnectWithNetty.ClientStateListener, ClientListener, View.OnTouchListener, View.OnLongClickListener {
@@ -109,6 +124,30 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     FrameLayout flModule;
     @BindView(R.id.llModule)
     LinearLayout llModule;
+    @BindView(R.id.btnPrint)
+    Button btnPrint;
+    @BindView(R.id.btnCut)
+    Button btnCut;
+    @BindView(R.id.printTv)
+    TextView tvPrint;
+    @BindView(R.id.btnPicture)
+    Button btnPicture;
+    @BindView(R.id.ivShowPicture)
+    ImageView ivShowPicture;
+    @BindView(R.id.btnTestAudio)
+    Button btnTestAudio;
+    @BindView(R.id.tvCollect)
+    TextView tvCollect;
+    @BindView(R.id.btnGotoTestAudio)
+    Button btnGotoTestAudio;
+    @BindView(R.id.flTop)
+    FrameLayout flTop;
+    @BindView(R.id.flBottom)
+    FrameLayout flBottom;
+    @BindView(R.id.flMiddle1)
+    FrameLayout flMiddle1;
+    @BindView(R.id.flMiddle2)
+    FrameLayout flMiddle2;
 
 
     private long lastBackPressTime;
@@ -205,6 +244,8 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN , WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         sharedPreferences = this.getSharedPreferences("Main", Context.MODE_PRIVATE);
@@ -244,12 +285,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btnSay1.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String say = contextEditText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("say1", say);
-                editor.apply();
-                showToast(MainActivity.this, say + "存入" + "按钮一");
-                ((Button) v).setText(say);
+                saveFavoriteWords(1, v);
                 return false;
             }
         });
@@ -257,13 +293,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btnSay2.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String say = contextEditText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("say2", say);
-                editor.apply();
-                showToast(MainActivity.this, say + "存入" + "按钮二");
-                ((Button) v).setText(say);
-
+                saveFavoriteWords(2, v);
                 return false;
             }
         });
@@ -271,13 +301,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btnSay3.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String say = contextEditText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("say3", say);
-                editor.apply();
-                showToast(MainActivity.this, say + "存入" + "按钮三");
-                ((Button) v).setText(say);
-
+                saveFavoriteWords(3, v);
                 return false;
             }
         });
@@ -285,13 +309,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btnSay4.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String say = contextEditText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("say4", say);
-                editor.apply();
-                showToast(MainActivity.this, say + "存入" + "按钮四");
-                ((Button) v).setText(say);
-
+                saveFavoriteWords(4, v);
                 return false;
             }
         });
@@ -300,13 +318,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btnSay5.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String say = contextEditText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("say5", say);
-                editor.apply();
-                showToast(MainActivity.this, say + "存入" + "按钮5");
-                ((Button) v).setText(say);
-
+                saveFavoriteWords(5, v);
                 return false;
             }
         });
@@ -314,13 +326,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btnSay6.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String say = contextEditText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("say6", say);
-                editor.apply();
-                showToast(MainActivity.this, say + "存入" + "按钮6");
-                ((Button) v).setText(say);
-
+                saveFavoriteWords(6, v);
                 return false;
             }
         });
@@ -328,13 +334,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btnSay7.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String say = contextEditText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("say7", say);
-                editor.apply();
-                showToast(MainActivity.this, say + "存入" + "按钮7");
-                ((Button) v).setText(say);
-
+                saveFavoriteWords(7, v);
                 return false;
             }
         });
@@ -342,13 +342,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btnSay8.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String say = contextEditText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("say8", say);
-                editor.apply();
-                showToast(MainActivity.this, say + "存入" + "按钮8");
-                ((Button) v).setText(say);
-
+                saveFavoriteWords(8, v);
                 return false;
             }
         });
@@ -429,7 +423,8 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             R.id.btn_left,
             R.id.btn_go,
             R.id.btn_up,
-            R.id.btn_stop, R.id.btn_down, R.id.btn_right, R.id.btnGotoPrint, R.id.btnGotoHardCtrl, R.id.btnGotoPic})
+            R.id.btn_stop, R.id.btn_down, R.id.btn_right, R.id.btnGotoPrint, R.id.btnGotoHardCtrl, R.id.btnGotoPic, R.id.btnPrint
+    ,R.id.btnCut, R.id.btnPicture, R.id.btnTestAudio, R.id.btnGotoTestAudio})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnLogin:
@@ -450,6 +445,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                     client.closeConnect();
                     btnLogin.setText("登录");
                     eetEditText.setEnabled(true);
+                    setContentEnable(false);
                 }
                 break;
             case R.id.btn_shake_head:
@@ -487,7 +483,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         }
                     }, 200);
                     isPutLeftHand = true;
-                    ((Button) view).setText("伸左手");
+                    ((Button) view).setText("缩左手");
                     CSJToast.showToast(this, "伸左手");
                 }
                 break;
@@ -771,6 +767,32 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 showModuleIndex = 2;
                 switchShowModule();
                 break;
+            case R.id.btnGotoTestAudio:
+                showModuleIndex = 3;
+                switchShowModule();
+                break;
+            case R.id.btnPrint:
+                String strPrint = tvPrint.getText().toString();
+                if (strPrint.isEmpty())
+                {
+                    Toast.makeText(this, "请输入要打印的内容!", Toast.LENGTH_SHORT);
+                    tvPrint.requestFocus();
+                    break;
+                }
+                client.sendMsg(String.format(Constants.PRINT_TEXT_CMD, tvPrint.getText()));
+                break;
+            case R.id.btnCut:
+                client.sendMsg(Constants.CUT_CMD);
+                break;
+            case R.id.btnPicture:
+                client.sendMsg(Constants.PHOTO_REQ);
+                Toast.makeText(this, "正在生成图像，请等待...", Toast.LENGTH_SHORT);
+                ivShowPicture.setImageResource(R.drawable.camera);
+                break;
+            case R.id.btnTestAudio:
+                client.sendMsg(Constants.OPEN_ONCE_AUDIO_START_REQ);
+                Toast.makeText(this, "请对着机器人说话!", Toast.LENGTH_SHORT);
+                break;
             default:
                 break;
         }
@@ -786,6 +808,12 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("last_ip", eetEditText.getText().toString());
                 editor.apply();
+
+                //打开打印机
+                client.sendMsg(Constants.PRINT_HARD_OPEN);
+                //初始化人脸识别模块
+                client.sendMsg(Constants.FACE_REG_START_REQ);
+                setContentEnable(true);
             }
         });
     }
@@ -799,6 +827,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 btnLogin.setEnabled(true);
                 btnLogin.setProgress(0);
                 showToast(MainActivity.this, "登录失败");
+                setContentEnable(false);
             }
         });
     }
@@ -807,40 +836,61 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     public void recMessage(String msg) {
 //        {"msg_id":"NAVI_ROBOT_MOVE_TO_REQ","pos":{"x":10,"y":235,"z":25,"rotation":157}}
         Logger.d("recMessage: " + msg);
-//        String msgType = (JSON.parseObject(msg, GetTypeBean.class)).getMsg_id();
-//        switch (msgType) {
-//            case "NAVI_GET_POS_RSP":
-//                NaviGetPoseRspBean bean = JSON.parseObject(msg, NaviGetPoseRspBean.class);
-//                Logger.d("bean " + bean.getPos().toString());
-//                switch (selectPose) {
-//                    case 0:
-//                        pose0 = bean.getPos();
-//                        sharePreferenceTools.putString("pose0", JSON.toJSONString(pose0));
-//                        break;
-//                    case 1:
-//                        pose1 = bean.getPos();
-//                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose1));
-//                        break;
-//                    case 2:
-//                        pose2 = bean.getPos();
-//                        sharePreferenceTools.putString("pose2", JSON.toJSONString(pose2));
-//                        break;
-//                    case 3:
-//                        pose3 = bean.getPos();
-//                        sharePreferenceTools.putString("pose3", JSON.toJSONString(pose3));
-//                        break;
-//                    case 4:
-//                        pose4 = bean.getPos();
-//                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose4));
-//                        break;
-//                    default:
-//                        break;
-//                }
-//                selectPose = -1;
-//                break;
-//            default:
-//                break;
-//        }
+        JsonElement obj = new JsonParser().parse(msg);
+        String msgType = obj.getAsJsonObject().get("msg_id").getAsString();
+        Logger.d("msgId: " + msgType);
+        switch (msgType) {
+            case "NAVI_GET_POS_RSP":
+                NaviGetPoseRspBean bean = JSON.parseObject(msg, NaviGetPoseRspBean.class);
+                Logger.d("bean " + bean.getPos().toString());
+                switch (selectPose) {
+                    case 0:
+                        pose0 = bean.getPos();
+                        sharePreferenceTools.putString("pose0", JSON.toJSONString(pose0));
+                        break;
+                    case 1:
+                        pose1 = bean.getPos();
+                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose1));
+                        break;
+                    case 2:
+                        pose2 = bean.getPos();
+                        sharePreferenceTools.putString("pose2", JSON.toJSONString(pose2));
+                        break;
+                    case 3:
+                        pose3 = bean.getPos();
+                        sharePreferenceTools.putString("pose3", JSON.toJSONString(pose3));
+                        break;
+                    case 4:
+                        pose4 = bean.getPos();
+                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose4));
+                        break;
+                    default:
+                        break;
+                }
+                selectPose = -1;
+                break;
+            case "FACE_SNAPSHOT_RESULT_RSP":
+                JsonObject cameraObj = obj.getAsJsonObject();
+                String[] recPath = cameraObj.get("file_path").getAsString().split("\\\\");
+                final String filePath = "http://" + eetEditText.getText().toString() + "/" + recPath[recPath.length - 1];
+                Logger.d("take picture path : " + filePath);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(MainActivity.this).load(filePath).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(ivShowPicture);
+                        Toast.makeText(MainActivity.this, "拍照成功!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+            case "SPEECH_ISR_LAST_RESULT_NTF":
+                JsonObject lastSpeechObj = obj.getAsJsonObject().get("result").getAsJsonObject();
+                String strDetectText = lastSpeechObj.get("text").getAsString();
+                Logger.d("detect audio text is " + strDetectText);
+                tvCollect.setText(strDetectText);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -924,5 +974,38 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     protected void onStart() {
         super.onStart();
         switchShowModule();
+    }
+
+    private void saveFavoriteWords(int index, View v)
+    {
+        String say = contextEditText.getText().toString();
+        if (say.isEmpty())
+        {
+            Toast.makeText(this, "请输入需要存储的文字!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String key = "say" + index;
+        editor.putString(key, say);
+        editor.apply();
+        key = "按钮" + index;
+        showToast(MainActivity.this, say + "存入" + key);
+        ((Button)v).setText(say);
+    }
+
+    private void setContentEnable(boolean enable)
+    {
+        FrameLayout[] flParents = {flTop, flMiddle1, flMiddle2, flBottom};
+        for (FrameLayout fl : flParents)
+        {
+            if (enable)
+            {
+                fl.getChildAt(1).setVisibility(View.GONE);
+            }
+            else
+            {
+                fl.getChildAt(1).setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

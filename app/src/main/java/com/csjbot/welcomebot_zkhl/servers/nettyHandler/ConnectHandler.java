@@ -5,6 +5,8 @@ import com.orhanobut.logger.Logger;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonParseException;
 
 /**
  * Created by huantingting on 16/6/16.
@@ -12,7 +14,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class ConnectHandler extends SimpleChannelInboundHandler<String> {
 
     private static ClientListener listener = null;
-
+    private StringBuffer msgStringBuff = new StringBuffer();
 
     public static void setListener(ClientListener l) {
         listener = l;
@@ -56,10 +58,16 @@ public class ConnectHandler extends SimpleChannelInboundHandler<String> {
         byte[] req = new byte[buf.readableBytes()];
         buf.readBytes(req);
         String body = new String(req, "UTF-8");
-        if (listener != null) {
-            listener.recMessage(body);
-        }
+        msgStringBuff.append(body);
         Logger.d("channelRead : " + body);
+        if (isGoodJson(msgStringBuff.toString()))
+        {
+            if (listener != null) {
+                listener.recMessage(msgStringBuff.toString());
+            }
+            msgStringBuff.delete(0, msgStringBuff.length());
+        }
+
     }
 
     /**
@@ -73,5 +81,18 @@ public class ConnectHandler extends SimpleChannelInboundHandler<String> {
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
         Logger.d("messageReceived : " + msg);
+    }
+
+    public  boolean isGoodJson(String json) {
+        if (json == null || json.length() == 0) {
+            return false;
+        }
+        try {
+            new JsonParser().parse(json);
+            return true;
+        } catch (JsonParseException e) {
+            Logger.e("bad json: " + json);
+            return false;
+        }
     }
 }

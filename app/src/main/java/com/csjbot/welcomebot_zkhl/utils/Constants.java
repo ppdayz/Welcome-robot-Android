@@ -29,6 +29,20 @@ public class Constants {
     /* 移动到某个点 */
     public static final String NAVI_ROBOT_MOVE_TO_REQ = "{\"msg_id\":\"NAVI_ROBOT_MOVE_TO_REQ\",\"pos\":{\"x\":%d,\"y\":%d,\"z\":%d,\"rotation\":%d}}";
 
+    //打印和裁剪
+    public static final String PRINT_HARD_OPEN= "{\"msg_id\":\"PRINTER_OPEN_CMD\"}";
+    public static final String PRINT_TEXT_CMD= "{\"msg_id\":\"PRINTER_PRINT_TEXT_CMD\",\"text\":\"%s\"}";
+    public static final String CUT_CMD= "{\"msg_id\":\"PRINTER_PAPER_CUT_CMD\"}";
+
+    //拍照
+    public static final String PHOTO_REQ = "{\"msg_id\":\"FACE_SNAPSHOT_REQ\"}";
+    public static final String FACE_REG_START_REQ = "{\"msg_id\":\"FACE_REG_START_REQ\"}";
+
+    //语音采集
+    public static final String OPEN_ONCE_AUDIO_START_REQ = "{\"msg_id\":\"SPEECH_ISR_ONCE_START_REQ\"}";
+    public static final String OPEN_ONCE_AUDIO_STOP_REQ = "{\"msg_id\":\"SPEECH_ISR_ONCE_STOP_REQ\"}";
+
+
     public static class BodyPart {
         public static final int RESET = 1;
         public static final int HEAD = 2;

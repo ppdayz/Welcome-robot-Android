@@ -59,360 +59,26 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
-            android:orientation="horizontal">
-
-
-            <android.support.v7.widget.AppCompatEditText
-                android:id="@+id/context_editText"
-                style="@style/txt_lab"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:hint="请输入说话内容" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/btn_welcome"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:text="问候" />
-
-                <Button
-                    android:id="@+id/btn_speak"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:text="说话" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_say1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="1" />
-
-            <Button
-                android:id="@+id/btn_say2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="2" />
-
-            <Button
-                android:id="@+id/btn_say3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="3" />
-
-            <Button
-                android:id="@+id/btn_say4"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="4" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_say5"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="5" />
-
-            <Button
-                android:id="@+id/btn_say6"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="6" />
-
-            <Button
-                android:id="@+id/btn_say7"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="7" />
-
-            <Button
-                android:id="@+id/btn_say8"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="8" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_auto"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        >
-
-        
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:layout_marginTop="15dp"
-            android:orientation="vertical"
-            android:id="@+id/llModule"
+            android:id="@+id/flTop"
             >
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:text="操控"
-                    android:id="@+id/btnGotoHardCtrl"
-                    android:background="#5e639078"
-                    />
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="拍照"
-                android:id="@+id/btnGotoPic"
-                android:background="#5e639078"
-                />
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="打印"
-                android:id="@+id/btnGotoPrint"
-                android:background="#5e639078"
-                />
-
-        </LinearLayout>
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="8"
-            android:layout_marginTop="15dp"
-            android:id="@+id/flModule"
-            android:layout_marginLeft="20dp">
-
-            <LinearLayout
-                android:id="@+id/ll_keyboard"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:visibility="invisible"
-                android:background="@drawable/keyboard"
-                android:orientation="horizontal">
-
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <Button
-                        android:id="@+id/btn_shake_head"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="摇头"
-                        android:textColor="#FFFFFF"
-                        android:textSize="30sp" />
-
-                    <Button
-                        android:id="@+id/btn_left"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="←"
-                        android:textColor="#FFFFFF"
-                        android:textSize="30sp" />
-
-                    <Button
-                        android:id="@+id/btn_bend"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="伸左手"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp" />
-
-
-                    <Button
-                        android:id="@+id/btn_go"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="伸右手"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <Button
-                        android:id="@+id/btn_up"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="↑"
-                        android:textColor="#FFFFFF"
-                        android:textSize="30sp" />
-
-                    <Button
-                        android:id="@+id/btn_stop"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="停"
-                        android:textColor="#FFFFFF"
-                        android:textSize="30sp" />
-
-                    <Button
-                        android:id="@+id/btn_down"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="↓"
-                        android:textColor="#FFFFFF"
-                        android:textSize="30sp" />
-
-
-                    <Button
-                        android:id="@+id/btn_setPoint"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="设置预设点"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <Button
-                        android:id="@+id/btn_3"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="点头"
-                        android:textColor="#FFFFFF"
-                        android:textSize="30sp" />
-
-                    <Button
-                        android:id="@+id/btn_right"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="→"
-                        android:textColor="#FFFFFF"
-                        android:textSize="30sp" />
-
-                    <Button
-                        android:id="@+id/btn_9"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="单击直立\n长按弯腰"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp" />
-
-
-                    <Button
-                        android:id="@+id/btn_gotoPoint"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/keyboard_set_select"
-                        android:text="到达预设点"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center"
-                >
-
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="3"
-                    android:id="@+id/ivShowPicture"
-                    android:scaleType="fitCenter" />
-
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/btnPicture"
-                    android:text="拍照"
-                    />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="invisible"
                 android:orientation="horizontal">
 
 
                 <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/printTv"
+                    android:id="@+id/context_editText"
                     style="@style/txt_lab"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
-                    android:hint="请输入打印的内容" />
+                    android:hint="请输入说话内容" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -422,26 +88,459 @@
                     android:orientation="vertical">
 
                     <Button
-                        android:id="@+id/btnPrint"
+                        android:id="@+id/btn_welcome"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:text="打印" />
+                        android:text="问候" />
 
                     <Button
-                        android:id="@+id/btnCut"
+                        android:id="@+id/btn_speak"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:text="剪切" />
+                        android:text="说话" />
                 </LinearLayout>
 
             </LinearLayout>
-
-
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#A2A2A2"
+                android:alpha="0.8"
+                >
+            </Button>
 
         </FrameLayout>
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/flMiddle1"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_say1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="1" />
+
+                <Button
+                    android:id="@+id/btn_say2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="2" />
+
+                <Button
+                    android:id="@+id/btn_say3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="3" />
+
+                <Button
+                    android:id="@+id/btn_say4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="4" />
+            </LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#A2A2A2"
+                android:alpha="0.8"
+                >
+            </Button>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/flMiddle2"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_say5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="5" />
+
+                <Button
+                    android:id="@+id/btn_say6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="6" />
+
+                <Button
+                    android:id="@+id/btn_say7"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="7" />
+
+                <Button
+                    android:id="@+id/btn_say8"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="8" />
+            </LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#A2A2A2"
+                android:alpha="0.8"
+                >
+            </Button>
+        </FrameLayout>
+
+
+
     </LinearLayout>
 
-</LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/flBottom"
+        >
+        <LinearLayout
+            android:id="@+id/ll_auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:id="@+id/llModule"
+                >
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="操控"
+                    android:id="@+id/btnGotoHardCtrl"
+                    android:background="#5e639078"
+                    />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="拍照"
+                    android:id="@+id/btnGotoPic"
+                    android:background="#5e639078"
+                    />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="打印"
+                    android:id="@+id/btnGotoPrint"
+                    android:background="#5e639078"
+                    />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="采音"
+                    android:id="@+id/btnGotoTestAudio"
+                    android:background="#5e639078"
+                    />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="8"
+                android:layout_marginTop="15dp"
+                android:id="@+id/flModule"
+                android:layout_marginLeft="20dp">
+
+                <LinearLayout
+                    android:id="@+id/ll_keyboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="invisible"
+                    android:background="@drawable/keyboard"
+                    android:orientation="horizontal">
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/btn_shake_head"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="摇头"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_left"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="←"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_bend"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="伸左手"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp" />
+
+
+                        <Button
+                            android:id="@+id/btn_go"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="伸右手"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/btn_up"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="↑"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_stop"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="停"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_down"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="↓"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+
+                        <Button
+                            android:id="@+id/btn_setPoint"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="设置预设点"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/btn_3"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="点头"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_right"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="→"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_9"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="单击直立\n长按弯腰"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp" />
+
+
+                        <Button
+                            android:id="@+id/btn_gotoPoint"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="到达预设点"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:visibility="invisible"
+                    >
+
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:id="@+id/ivShowPicture"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/camera"
+                        />
+
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/btnPicture"
+                        android:text="拍照"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"
+                    android:orientation="horizontal">
+
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:id="@+id/printTv"
+                        style="@style/txt_lab"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:hint="请输入打印的内容" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/btnPrint"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:text="打印" />
+
+                        <Button
+                            android:id="@+id/btnCut"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:text="剪切" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="测试步骤\n\n 1.点击开始采集按钮。 \n\n 2.对着机器人讲话。 \n\n 3.确认是否收到采集的结果。\n"
+                        />
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="采集一次"
+                        android:id="@+id/btnTestAudio"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="采集结果:\n"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tvCollect"
+                        />
+
+                </LinearLayout>
+
+
+
+            </FrameLayout>
+
+        </LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#A2A2A2"
+            android:alpha="0.8"
+            >
+        </Button>
+        </FrameLayout>
+
+    </LinearLayout>
