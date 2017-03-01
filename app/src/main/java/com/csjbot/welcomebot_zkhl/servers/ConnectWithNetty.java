@@ -45,7 +45,6 @@ public class ConnectWithNetty {
         if ("".equals(ip) && ip == null) {
             Logger.d("connect()  ip is null");
 
-
             return;
         }
         this.listener = l;
