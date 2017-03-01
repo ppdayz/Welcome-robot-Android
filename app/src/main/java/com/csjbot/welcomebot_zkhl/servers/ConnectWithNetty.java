@@ -44,7 +44,6 @@ public class ConnectWithNetty {
     public void connect(final String ip, final ClientStateListener l) {
         if ("".equals(ip) && ip == null) {
             Logger.d("connect()  ip is null");
-
             return;
         }
         this.listener = l;
