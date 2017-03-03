@@ -884,9 +884,16 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 break;
             case "SPEECH_ISR_LAST_RESULT_NTF":
                 JsonObject lastSpeechObj = obj.getAsJsonObject().get("result").getAsJsonObject();
-                String strDetectText = lastSpeechObj.get("text").getAsString();
+                final String strDetectText = lastSpeechObj.get("text").getAsString();
                 Logger.d("detect audio text is " + strDetectText);
-                tvCollect.setText(strDetectText);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvCollect.setText(strDetectText);
+                        Toast.makeText(MainActivity.this, "您说了：" + strDetectText, Toast.LENGTH_SHORT);
+                    }
+                });
+                client.sendMsg(Constants.OPEN_ONCE_AUDIO_STOP_REQ);
                 break;
             default:
                 break;
