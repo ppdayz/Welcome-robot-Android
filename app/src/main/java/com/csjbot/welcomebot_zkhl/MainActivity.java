@@ -1,7 +1,6 @@
 package com.csjbot.welcomebot_zkhl;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -12,6 +11,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -22,7 +23,11 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.csjbot.welcomebot_zkhl.entity.GetTypeBean;
+import com.csjbot.rosclient.RosClientAgent;
+import com.csjbot.rosclient.constant.ClientConstant;
+import com.csjbot.rosclient.listener.ClientEvent;
+import com.csjbot.rosclient.listener.EventListener;
+import com.csjbot.rosclient.utils.PacketBuilder;
 import com.csjbot.welcomebot_zkhl.entity.NaviGetPoseRspBean;
 import com.csjbot.welcomebot_zkhl.servers.ConnectWithNetty;
 import com.csjbot.welcomebot_zkhl.servers.nettyHandler.ClientListener;
@@ -35,10 +40,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.orhanobut.logger.Logger;
 import com.pgyersdk.update.PgyUpdateManager;
-import android.view.Window;
-import android.view.WindowManager;
-
-import org.json.JSONObject;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -49,13 +50,9 @@ import butterknife.OnClick;
 
 import static com.csjbot.welcomebot_zkhl.CSJToast.showToast;
 import static com.csjbot.welcomebot_zkhl.R.id.btn_up;
-import static com.csjbot.welcomebot_zkhl.R.id.flBottom;
-import static com.csjbot.welcomebot_zkhl.R.id.flMiddle1;
-import static com.csjbot.welcomebot_zkhl.R.id.flMiddle2;
-import static com.csjbot.welcomebot_zkhl.R.id.ivShowPicture;
 
 
-public class MainActivity extends Activity implements ConnectWithNetty.ClientStateListener, ClientListener, View.OnTouchListener, View.OnLongClickListener {
+public class MainActivity extends Activity implements ConnectWithNetty.ClientStateListener, ClientListener, View.OnTouchListener, View.OnLongClickListener, EventListener {
 
     @BindView(R.id.eet_editText)
     AppCompatEditText eetEditText;
@@ -166,6 +163,9 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
 
     private int showModuleIndex = 0;
 
+    private RosClientAgent rosClientAgent = null;
+
+
     /**
      * Called when a touch event is dispatched to a view. This allows listeners to
      * get a chance to respond before the target view.
@@ -222,12 +222,13 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         e.printStackTrace();
                     }
 
-                    client.sendMsg(moveString);
+                    sendMessageToClient(moveString);
                 }
             }
         }).start();
         return false;
     }
+
 
     private static class MainActivityHandler extends WeakReferenceHandler<MainActivity> {
 
@@ -245,8 +246,10 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN , WindowManager.LayoutParams. FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
+        rosClientAgent = RosClientAgent.createRosClientAgent(this);
 
         sharedPreferences = this.getSharedPreferences("Main", Context.MODE_PRIVATE);
 
@@ -351,7 +354,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         btn9.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.WaistAction.DOWN));
+                sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.WaistAction.DOWN));
                 CSJToast.showToast(MainActivity.this, "弯腰");
                 return true;
             }
@@ -424,39 +427,40 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             R.id.btn_go,
             R.id.btn_up,
             R.id.btn_stop, R.id.btn_down, R.id.btn_right, R.id.btnGotoPrint, R.id.btnGotoHardCtrl, R.id.btnGotoPic, R.id.btnPrint
-    ,R.id.btnCut, R.id.btnPicture, R.id.btnTestAudio, R.id.btnGotoTestAudio})
+            , R.id.btnCut, R.id.btnPicture, R.id.btnTestAudio, R.id.btnGotoTestAudio})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnLogin:
                 String ip = eetEditText.getText().toString();
-                if (!client.isConnected()) {
+                if (!rosClientAgent.isConnected()) {
                     if (checkIP(ip)) {
                         btnLogin.setEnabled(false);
-                        client.connect(ip, this);
+//                        client.connect(ip, this);
+                        rosClientAgent.connect(ip, 60002);
                         btnLogin.setProgress(1);
                         eetEditText.setEnabled(false);
-                    }
-                    else
-                    {
+                    } else {
                         new AlertDialog.Builder(MainActivity.this).setMessage("IP地址不合法，请重新输入!").show();
                         btnLogin.requestFocus();
                     }
                 } else {
-                    client.closeConnect();
-                    btnLogin.setText("登录");
-                    eetEditText.setEnabled(true);
-                    setContentEnable(false);
+//                    rosClientAgent.destroy();
+//                    client.closeConnect();
+//                    btnLogin.setText("登录");
+//                    eetEditText.setEnabled(true);
+//                    setContentEnable(false);
+                    CSJToast.showToast(this, "已经连接");
                 }
                 break;
             case R.id.btn_shake_head:
-                client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.LEFT_THEN_RIGHT));
+                sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.LEFT_THEN_RIGHT));
                 showToast(this, "摇头");
                 break;
             case R.id.btn_3:
                 if (isDiantou) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.UP));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.UP));
                 } else {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.DOWN));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.DOWN));
                 }
                 isDiantou ^= true;
                 showToast(this, "点头");
@@ -464,22 +468,22 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_bend:
 
                 if (isPutLeftHand) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_ARM, Constants.BodyAction.RIGHT));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_ARM, Constants.BodyAction.RIGHT));
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_FOREARM, Constants.BodyAction.RIGHT));
+                            sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_FOREARM, Constants.BodyAction.RIGHT));
                         }
                     }, 200);
                     CSJToast.showToast(MainActivity.this, "缩回去");
                     ((Button) view).setText("伸左手");
                     isPutLeftHand = false;
                 } else {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_ARM, Constants.BodyAction.LEFT));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_ARM, Constants.BodyAction.LEFT));
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_FOREARM, Constants.BodyAction.LEFT));
+                            sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_FOREARM, Constants.BodyAction.LEFT));
                         }
                     }, 200);
                     isPutLeftHand = true;
@@ -487,30 +491,30 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                     CSJToast.showToast(this, "伸左手");
                 }
                 break;
-//                client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.DOWN));
+//               sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.DOWN));
 //                showToast(this, "弯腰");
 //                break;
             case R.id.btn_9:
-                client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.WaistAction.UP));
+                sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.WaistAction.UP));
                 showToast(this, "直立");
                 break;
             case R.id.btn_welcome:
-                client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.DOWN));
+                sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.DOWN));
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, "尊敬的领导，您好"));
+                        sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, "尊敬的领导，您好"));
                         showToast(MainActivity.this, "领导好");
                     }
                 }, 500);
-//                client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.DOWN));
+//               sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.DOWN));
 //                CSJToast.showToast(this, "弯腰");
 
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-//                        client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.UP));
-                        client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.UP));
+//                       sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.UP));
+                        sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.UP));
 
 //                        CSJToast.showToast(MainActivity.this, "直立");
 
@@ -520,7 +524,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_speak: {
                 String say = contextEditText.getText().toString();
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -530,7 +534,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_say1: {
                 String say = sharedPreferences.getString("say1", "");
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -539,7 +543,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_say2: {
                 String say = sharedPreferences.getString("say2", "");
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -548,7 +552,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_say3: {
                 String say = sharedPreferences.getString("say3", "");
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -557,7 +561,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_say4: {
                 String say = sharedPreferences.getString("say4", "");
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -566,7 +570,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_say5: {
                 String say = sharedPreferences.getString("say5", "");
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -575,7 +579,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_say6: {
                 String say = sharedPreferences.getString("say6", "");
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -584,7 +588,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_say7: {
                 String say = sharedPreferences.getString("say7", "");
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -593,7 +597,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case R.id.btn_say8: {
                 String say = sharedPreferences.getString("say8", "");
                 if (!say.isEmpty()) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.SPEAK_MODE, say));
                 } else {
                     showToast(this, "说点啥吧");
                 }
@@ -601,22 +605,22 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             break;
             case R.id.btn_go:
                 if (isPutHand) {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_ARM, Constants.BodyAction.RIGHT));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_ARM, Constants.BodyAction.RIGHT));
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_FOREARM, Constants.BodyAction.RIGHT));
+                            sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_FOREARM, Constants.BodyAction.RIGHT));
                         }
                     }, 200);
                     CSJToast.showToast(MainActivity.this, "缩回去");
                     btnGo.setText("伸右手");
                     isPutHand = false;
                 } else {
-                    client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_ARM, Constants.BodyAction.LEFT));
+                    sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_ARM, Constants.BodyAction.LEFT));
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_FOREARM, Constants.BodyAction.LEFT));
+                            sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_FOREARM, Constants.BodyAction.LEFT));
                         }
                     }, 200);
                     isPutHand = true;
@@ -629,54 +633,54 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                     @Override
                     public void run() {
 
-                        client.sendMsg(Constants.MOVE_ACTION_STOP);
+                        sendMessageToClient(Constants.MOVE_ACTION_STOP);
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_ARM, Constants.BodyAction.STOP));
+                        sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_ARM, Constants.BodyAction.STOP));
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_FOREARM, Constants.BodyAction.STOP));
+                        sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.LEFT_FOREARM, Constants.BodyAction.STOP));
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_ARM, Constants.BodyAction.STOP));
+                        sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_ARM, Constants.BodyAction.STOP));
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_FOREARM, Constants.BodyAction.STOP));
+                        sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.RIGHT_FOREARM, Constants.BodyAction.STOP));
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
 
-                        client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.HEAD_UP_AND_DOWN_STOP));
-                        client.sendMsg(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.STOP));
+                        sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.HEAD_UP_AND_DOWN_STOP));
+                        sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.STOP));
 
                     }
                 }).start();
                 break;
             case btn_up:
-                client.sendMsg(Constants.MOVE_ACTION_UP);
+                sendMessageToClient(Constants.MOVE_ACTION_UP);
                 break;
             case R.id.btn_down:
-                client.sendMsg(Constants.MOVE_ACTION_DOWM);
+                sendMessageToClient(Constants.MOVE_ACTION_DOWM);
                 break;
             case R.id.btn_left:
-                client.sendMsg(Constants.MOVE_ACTION_LEFT);
+                sendMessageToClient(Constants.MOVE_ACTION_LEFT);
                 break;
             case R.id.btn_right:
-                client.sendMsg(Constants.MOVE_ACTION_RIGHT);
+                sendMessageToClient(Constants.MOVE_ACTION_RIGHT);
                 break;
             case R.id.btn_setPoint:
                 initPoseStrings();
@@ -686,7 +690,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         .setItems(preSetPoints,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        client.sendMsg(Constants.NAVI_GET_POS_REQ);
+                                        sendMessageToClient(Constants.NAVI_GET_POS_REQ);
                                         selectPose = which;
                                         CSJToast.showToast(MainActivity.this, "设置预设点 " + String.valueOf(which));
                                         dialog.dismiss();
@@ -709,7 +713,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                                                     dialog.dismiss();
                                                     return;
                                                 }
-                                                client.sendMsg(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
+                                                sendMessageToClient(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
                                                         pose0.getX(), pose0.getY(), pose0.getZ(), pose0.getRotation()));
                                                 break;
                                             case 1:
@@ -718,7 +722,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                                                     dialog.dismiss();
                                                     return;
                                                 }
-                                                client.sendMsg(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
+                                                sendMessageToClient(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
                                                         pose1.getX(), pose1.getY(), pose1.getZ(), pose1.getRotation()));
                                                 break;
                                             case 2:
@@ -727,7 +731,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                                                     dialog.dismiss();
                                                     return;
                                                 }
-                                                client.sendMsg(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
+                                                sendMessageToClient(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
                                                         pose2.getX(), pose2.getY(), pose2.getZ(), pose2.getRotation()));
                                                 break;
                                             case 3:
@@ -736,7 +740,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                                                     dialog.dismiss();
                                                     return;
                                                 }
-                                                client.sendMsg(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
+                                                sendMessageToClient(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
                                                         pose3.getX(), pose3.getY(), pose3.getZ(), pose3.getRotation()));
                                                 break;
                                             case 4:
@@ -745,7 +749,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                                                     dialog.dismiss();
                                                     return;
                                                 }
-                                                client.sendMsg(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
+                                                sendMessageToClient(String.format(Locale.getDefault(), Constants.NAVI_ROBOT_MOVE_TO_REQ,
                                                         pose4.getX(), pose4.getY(), pose4.getZ(), pose4.getRotation()));
                                                 break;
                                         }
@@ -773,30 +777,83 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 break;
             case R.id.btnPrint:
                 String strPrint = tvPrint.getText().toString();
-                if (strPrint.isEmpty())
-                {
+                if (strPrint.isEmpty()) {
                     Toast.makeText(this, "请输入要打印的内容!", Toast.LENGTH_SHORT);
                     tvPrint.requestFocus();
                     break;
                 }
-                client.sendMsg(String.format(Constants.PRINT_TEXT_CMD, tvPrint.getText()));
+                sendMessageToClient(String.format(Constants.PRINT_TEXT_CMD, tvPrint.getText()));
                 break;
             case R.id.btnCut:
-                client.sendMsg(Constants.CUT_CMD);
+                sendMessageToClient(Constants.CUT_CMD);
                 break;
             case R.id.btnPicture:
-                client.sendMsg(Constants.PHOTO_REQ);
+                sendMessageToClient(Constants.PHOTO_REQ);
                 Toast.makeText(this, "正在生成图像，请等待...", Toast.LENGTH_SHORT);
                 ivShowPicture.setImageResource(R.drawable.camera);
                 break;
             case R.id.btnTestAudio:
-                client.sendMsg(Constants.OPEN_ONCE_AUDIO_START_REQ);
+                sendMessageToClient(Constants.OPEN_ONCE_AUDIO_START_REQ);
                 Toast.makeText(this, "请对着机器人说话!", Toast.LENGTH_SHORT);
                 break;
             default:
                 break;
         }
 
+    }
+
+
+    @Override
+    public void onEvent(ClientEvent event) {
+        switch (event.eventType) {
+            case ClientConstant.EVENT_CONNECT_SUCCESS:
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        eetEditText.setEnabled(false);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("last_ip", eetEditText.getText().toString());
+                        editor.apply();
+
+                        //打开打印机
+                        sendMessageToClient(Constants.PRINT_HARD_OPEN);
+                        //初始化人脸识别模块
+                        sendMessageToClient(Constants.FACE_REG_START_REQ);
+                        setContentEnable(true);
+
+                        eetEditText.setEnabled(false);
+                        btnLogin.setEnabled(true);
+                        btnLogin.setProgress(100);
+                        btnLogin.setText("断开");
+                    }
+                });
+                break;
+            case ClientConstant.EVENT_CONNECT_FAILD:
+            case ClientConstant.EVENT_CONNECT_TIME_OUT:
+
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        eetEditText.setEnabled(true);
+                        btnLogin.setEnabled(true);
+                        btnLogin.setProgress(0);
+                        showToast(MainActivity.this, "登录失败");
+                        setContentEnable(false);
+
+                        eetEditText.setEnabled(true);
+                        btnLogin.setProgress(0);
+                        btnLogin.setText("登录");
+                    }
+                });
+                break;
+        }
+    }
+
+
+    public void sendMessageToClient(String message) {
+//        client.sendMsg(message);
+
+        rosClientAgent.sendMessage(PacketBuilder.createAudioPacket(message.getBytes()));
     }
 
     @Override
@@ -810,9 +867,9 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 editor.apply();
 
                 //打开打印机
-                client.sendMsg(Constants.PRINT_HARD_OPEN);
+                sendMessageToClient(Constants.PRINT_HARD_OPEN);
                 //初始化人脸识别模块
-                client.sendMsg(Constants.FACE_REG_START_REQ);
+                sendMessageToClient(Constants.FACE_REG_START_REQ);
                 setContentEnable(true);
             }
         });
@@ -893,7 +950,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         Toast.makeText(MainActivity.this, "您说了：" + strDetectText, Toast.LENGTH_SHORT);
                     }
                 });
-                client.sendMsg(Constants.OPEN_ONCE_AUDIO_STOP_REQ);
+                sendMessageToClient(Constants.OPEN_ONCE_AUDIO_STOP_REQ);
                 break;
             default:
                 break;
@@ -933,17 +990,12 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     }
 
 
-    private void switchShowModule()
-    {
-        for(int i = 0; i < flModule.getChildCount(); i++)
-        {
-            if (i == showModuleIndex)
-            {
+    private void switchShowModule() {
+        for (int i = 0; i < flModule.getChildCount(); i++) {
+            if (i == showModuleIndex) {
                 flModule.getChildAt(i).setVisibility(View.VISIBLE);
                 llModule.getChildAt(i).setBackgroundColor(Color.parseColor("#5E3D6BE0"));
-            }
-            else
-            {
+            } else {
                 flModule.getChildAt(i).setVisibility(View.INVISIBLE);
                 llModule.getChildAt(i).setBackgroundColor(Color.parseColor("#5e639078"));
             }
@@ -954,22 +1006,16 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
 
     @Override
     public void onBackPressed() {
-        if(lastBackPressTime == 0)
-        {
+        if (lastBackPressTime == 0) {
             Toast.makeText(this, "再按一次返回键退出程序！", Toast.LENGTH_SHORT).show();
             lastBackPressTime = System.currentTimeMillis();
             return;
-        }
-        else
-        {
-            if (System.currentTimeMillis() - lastBackPressTime >= 1500)
-            {
+        } else {
+            if (System.currentTimeMillis() - lastBackPressTime >= 1500) {
                 Toast.makeText(this, "再按一次返回键退出程序！", Toast.LENGTH_SHORT).show();
                 lastBackPressTime = System.currentTimeMillis();
                 return;
-            }
-            else
-            {
+            } else {
                 finish();
             }
         }
@@ -983,11 +1029,9 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         switchShowModule();
     }
 
-    private void saveFavoriteWords(int index, View v)
-    {
+    private void saveFavoriteWords(int index, View v) {
         String say = contextEditText.getText().toString();
-        if (say.isEmpty())
-        {
+        if (say.isEmpty()) {
             Toast.makeText(this, "请输入需要存储的文字!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -997,20 +1041,15 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         editor.apply();
         key = "按钮" + index;
         showToast(MainActivity.this, say + "存入" + key);
-        ((Button)v).setText(say);
+        ((Button) v).setText(say);
     }
 
-    private void setContentEnable(boolean enable)
-    {
+    private void setContentEnable(boolean enable) {
         FrameLayout[] flParents = {flTop, flMiddle1, flMiddle2, flBottom};
-        for (FrameLayout fl : flParents)
-        {
-            if (enable)
-            {
+        for (FrameLayout fl : flParents) {
+            if (enable) {
                 fl.getChildAt(1).setVisibility(View.GONE);
-            }
-            else
-            {
+            } else {
                 fl.getChildAt(1).setVisibility(View.VISIBLE);
             }
         }

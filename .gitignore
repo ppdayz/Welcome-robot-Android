@@ -8,3 +8,7 @@
 /captures
 .externalNativeBuild
 .idea
+/rosclient.zip
+/app/src/main/gen/com/csjbot/welcomebot_zkhl/BuildConfig.java
+/app/src/main/gen/com/csjbot/welcomebot_zkhl/Manifest.java
+/app/src/main/gen/com/csjbot/welcomebot_zkhl/R.java
