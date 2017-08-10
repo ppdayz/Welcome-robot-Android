@@ -10,7 +10,6 @@ import com.csjbot.rosclient.core.util.PacketUtil;
 import com.csjbot.rosclient.entity.MessagePacket;
 import com.csjbot.rosclient.listener.ClientEvent;
 import com.csjbot.rosclient.utils.CsjLogger;
-import com.csjbot.rosclient.utils.NetDataTypeTransform;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,9 +59,11 @@ public class ClientManager implements DataReceive {
     private ClientManager() {
     }
 
+
+
     @Override
     public void onReceive(byte[] data) {
-        CsjLogger.debug("rec data is " + NetDataTypeTransform.dumpHex(data));
+//        CsjLogger.debug("rec data is " + NetDataTypeTransform.dumpHex(data));
         MessagePacket packet = PacketUtil.parser(data);
         if (packet != null) {
             mRequestListener.onReqeust(packet);
@@ -199,7 +200,7 @@ public class ClientManager implements DataReceive {
                 if (!mConnector.sendUrgentData()) {
                     CsjLogger.info("receiveHeartBeatCounter = " + receiveHeartBeatCounter);
                     receiveHeartBeatCounter--;
-                    if (receiveHeartBeatCounter == 0) {
+                    if (receiveHeartBeatCounter <= 0) {
                         mConnector.disConnect();
                         mRequestListener.onEvent(new ClientEvent(ClientConstant.EVENT_DISCONNET));
                         mReConnectTread.scheduleAtFixedRate(reConnectRunnable, 0, RECONNECT_INTERVAL, TimeUnit.SECONDS);
@@ -255,6 +256,7 @@ public class ClientManager implements DataReceive {
                     } else {
                         if (entity.callback != null) {
                             entity.onFailed(stat);
+                            receiveHeartBeatCounter--;
                             CsjLogger.error("onFailed");
                         }
                     }

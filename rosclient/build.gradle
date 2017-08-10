@@ -47,4 +47,6 @@ task proguardJar(dependsOn: ['makeJar'], type: ProGuardTask) {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
+
+    compile 'com.squareup.okio:okio:1.13.0'
 }

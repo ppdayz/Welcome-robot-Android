@@ -25,7 +25,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.csjbot.rosclient.RosClientAgent;
 import com.csjbot.rosclient.constant.ClientConstant;
-import com.csjbot.rosclient.entity.CommonPacket;
 import com.csjbot.rosclient.entity.MessagePacket;
 import com.csjbot.rosclient.listener.ClientEvent;
 import com.csjbot.rosclient.listener.EventListener;
@@ -261,6 +260,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
 
         btnLogin.setMode(ActionProcessButton.Mode.ENDLESS);
         ConnectHandler.setListener(this);
+
 
         btnSay1.setText(sharedPreferences.getString("say1", "1"));
         btnSay2.setText(sharedPreferences.getString("say2", "2"));
@@ -809,6 +809,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         switch (event.eventType) {
             case ClientConstant.EVENT_RECONNECTED:
             case ClientConstant.EVENT_CONNECT_SUCCESS:
+
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -858,7 +859,8 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 break;
             case ClientConstant.EVENT_PACKET:
                 MessagePacket packet = (MessagePacket) event.data;
-                CsjLogger.warn(((CommonPacket) packet).getContentJson());
+                CsjLogger.warn("rec packet");
+//                CsjLogger.warn(((CommonPacket) packet).getContentJson());
                 break;
             default:
                 break;

@@ -57,7 +57,7 @@ public abstract class MessagePacket implements Packet {
         header = new PacketHeader(rawData);
         messageLen = NetDataTypeTransform.bytesToInt2(rawData, 20);
 
-        CsjLogger.debug("messageLen is " + String.valueOf(messageLen));
+//        CsjLogger.debug("messageLen is " + String.valueOf(messageLen));
 
         if (messageLen + 24 != rawData.length) {
             CsjLogger.error("messasgeLen is " + messageLen + " not match rawData len " + rawData.length);

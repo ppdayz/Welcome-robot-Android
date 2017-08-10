@@ -5,6 +5,7 @@ import com.csjbot.rosclient.core.inter.DataReceive;
 import com.csjbot.rosclient.core.inter.IConnector;
 import com.csjbot.rosclient.core.util.Error;
 import com.csjbot.rosclient.utils.CsjLogger;
+import com.csjbot.rosclient.utils.NetDataTypeTransform;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,10 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+
+import okio.BufferedSource;
+import okio.Source;
 
 /**
  * Copyright (c) 2016, SuZhou CsjBot. All Rights Reserved. <br>
@@ -32,6 +37,8 @@ class RosConnector implements IConnector {
     private InputStream in;
     private OutputStream out;
     private DataReceive dataReceive;
+    Source source;
+    BufferedSource bufferedSource = null;
 
     /**
      * 用源生 Socket 连接 Ros
@@ -103,6 +110,25 @@ class RosConnector implements IConnector {
         }
     }
 
+    private static final byte[] mBuffer = new byte[8192];
+    private int offset = 0;
+
+
+    private void splitBuffer() {
+        int len = NetDataTypeTransform.bytesToInt2(mBuffer, 20);
+        int wholePacketLen = 24 + len;
+        if (offset < wholePacketLen) {
+            return;
+        }
+
+        dataReceive.onReceive(Arrays.copyOf(mBuffer, wholePacketLen));
+//        CsjLogger.warn(NetDataTypeTransform.dumpHex(Arrays.copyOf(mBuffer, wholePacketLen)));
+        System.arraycopy(mBuffer, wholePacketLen, mBuffer, 0, wholePacketLen);
+        offset -= wholePacketLen;
+
+        splitBuffer();
+    }
+
     /**
      * 接收数据，新建一个线程
      */
@@ -114,25 +140,27 @@ class RosConnector implements IConnector {
                     try {
                         in = socket.getInputStream();
                         byte[] data = inputStreamToByte(in);
+
                         if (data != null && data.length > 0 && dataReceive != null) {
-                            if (data.length > 0) {
-                                dataReceive.onReceive(data);
-//                                CsjLogger.info(Arrays.toString(data));
-                            }
+                            System.arraycopy(data, 0, mBuffer, offset, data.length);
+                            offset += data.length;
+
+                            splitBuffer();
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        CsjLogger.error(e.toString());
                     }
 
                     try {
                         Thread.sleep(20);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        CsjLogger.error(e.toString());
                     }
                 }
             }
         }).start();
     }
+
 
     /**
      * InputStream 转为 byte
@@ -156,19 +184,14 @@ class RosConnector implements IConnector {
         }
 
         byte[] b = null;
-        if (count > 2048) {
-            b = new byte[2048];
-        } else {
-            if (count != -1) {
-                b = new byte[count];
-            }
+        if (count >= 0) {
+            b = new byte[count];
         }
 
         if (null != b) {
             int ret = inStream.read(b);
             if (ret != count) {
                 CsjLogger.info("读取 inStream 错误， 预计读取 " + count + " 实际读取 " + ret);
-                return null;
             }
         }
 
