@@ -1,19 +1,20 @@
 package com.csjbot.rosclient.core;
 
 import com.csjbot.rosclient.constant.ClientConstant;
-import com.csjbot.rosclient.core.inter.IConnector;
 import com.csjbot.rosclient.core.inter.DataReceive;
+import com.csjbot.rosclient.core.inter.IConnector;
 import com.csjbot.rosclient.core.util.Error;
 import com.csjbot.rosclient.utils.CsjLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 /**
  * Copyright (c) 2016, SuZhou CsjBot. All Rights Reserved. <br>
@@ -44,12 +45,12 @@ class RosConnector implements IConnector {
      */
     @Override
     public int connect(String hostName, int port) {
-        CsjLogger.info(getClass().getSimpleName() + " connect to host " + hostName);
+//        CsjLogger.info(getClass().getSimpleName() + " connect to host " + hostName);
 
         InetAddress address;
         try {
             address = InetAddress.getByName(hostName);
-            CsjLogger.info("hostName " + hostName);
+//            CsjLogger.info("hostName " + hostName);
         } catch (UnknownHostException e) {
             e.printStackTrace();
             return Error.SocketError.UNKONWN_HOST;
@@ -59,16 +60,22 @@ class RosConnector implements IConnector {
 
         try {
             socket = new Socket();
-            socket.connect(socketAddress, ClientConstant.EVENT_CONNECT_TIME_OUT);
+            socket.connect(socketAddress, ClientConstant.CONNECT_TIME_OUT);
             socket.setKeepAlive(true);
             out = socket.getOutputStream();
             if (!isRunning) {
                 isRunning = true;
             }
             receiveData();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (SocketTimeoutException e) {
+            CsjLogger.error(e.getMessage());
             return Error.SocketError.CONNECT_TIME_OUT;
+        } catch (ConnectException e) {
+            CsjLogger.error(e.getMessage());
+            return Error.SocketError.CONNECT_NETWORK_UNREACHABLE;
+        } catch (IOException e) {
+            CsjLogger.error(e.getClass().getSimpleName() + "  " + e.getMessage());
+            return Error.SocketError.CONNECT_OTHER_IO_ERROR;
         }
 
         return Error.SocketError.CONNECT_SUCCESS;
@@ -110,7 +117,7 @@ class RosConnector implements IConnector {
                         if (data != null && data.length > 0 && dataReceive != null) {
                             if (data.length > 0) {
                                 dataReceive.onReceive(data);
-                                CsjLogger.info(Arrays.toString(data));
+//                                CsjLogger.info(Arrays.toString(data));
                             }
                         }
                     } catch (IOException e) {
@@ -184,6 +191,27 @@ class RosConnector implements IConnector {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void disConnect() {
+        destroy();
+    }
+
+    @Override
+    public boolean sendUrgentData() {
+        if (socket != null) {
+            try {
+                socket.sendUrgentData(0xff);
+            } catch (IOException e) {
+                CsjLogger.error(e.getMessage());
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

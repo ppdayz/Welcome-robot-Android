@@ -37,6 +37,8 @@ public class Constants {
     //拍照
     public static final String PHOTO_REQ = "{\"msg_id\":\"FACE_SNAPSHOT_REQ\"}";
     public static final String FACE_REG_START_REQ = "{\"msg_id\":\"FACE_REG_START_REQ\"}";
+    public static final String TEST = "{\"msg_id\":\"SPEECH_SERVICE_START_REQ\"}";
+
 
     //语音采集
     public static final String OPEN_ONCE_AUDIO_START_REQ = "{\"msg_id\":\"SPEECH_ISR_ONCE_START_REQ\"}";

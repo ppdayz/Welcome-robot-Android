@@ -59,7 +59,6 @@ public class NetDataTypeTransform {
      * @param b
      * @return
      */
-    @Deprecated
     public static int bytesToInt2(byte[] b) {
         int intValue = 0;
         for (int i = 0; i < b.length; i++) {
@@ -325,4 +324,17 @@ public class NetDataTypeTransform {
         return temp;
     }
 
+    public static String dumpHex(byte[] src) {
+        String num = "0123456789ABCDEF";
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        for (byte aSrc : src) {
+            int high = aSrc >> 4 & 0x0f;
+            int low = aSrc & 0x0f;
+            sb.append(num.charAt(high)).append(num.charAt(low)).append(" ");
+        }
+        sb.append(" ]");
+
+        return sb.toString();
+    }
 }

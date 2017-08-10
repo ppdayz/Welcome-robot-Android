@@ -5,9 +5,11 @@ package com.csjbot.rosclient.entity;
  */
 
 public class CommonPacket extends MessagePacket {
-
     public CommonPacket(byte[] content) {
         mContent = content;
+    }
+
+    public CommonPacket() {
     }
 
     @Override
@@ -18,5 +20,9 @@ public class CommonPacket extends MessagePacket {
     @Override
     public void setContent(byte[] content) {
         this.mContent = content;
+    }
+
+    public String getContentJson() {
+        return new String(mContent);
     }
 }

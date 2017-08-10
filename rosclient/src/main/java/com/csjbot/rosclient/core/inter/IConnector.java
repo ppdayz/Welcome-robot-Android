@@ -49,4 +49,8 @@ public interface IConnector {
      * 销毁 IConnector， 参见各个实现，保证所有的都设置为空
      */
     void destroy();
+
+    void disConnect();
+
+    boolean sendUrgentData();
 }

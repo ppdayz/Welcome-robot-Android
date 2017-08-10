@@ -25,8 +25,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.csjbot.rosclient.RosClientAgent;
 import com.csjbot.rosclient.constant.ClientConstant;
+import com.csjbot.rosclient.entity.CommonPacket;
+import com.csjbot.rosclient.entity.MessagePacket;
 import com.csjbot.rosclient.listener.ClientEvent;
 import com.csjbot.rosclient.listener.EventListener;
+import com.csjbot.rosclient.utils.CsjLogger;
 import com.csjbot.rosclient.utils.PacketBuilder;
 import com.csjbot.welcomebot_zkhl.entity.NaviGetPoseRspBean;
 import com.csjbot.welcomebot_zkhl.servers.ConnectWithNetty;
@@ -39,7 +42,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.orhanobut.logger.Logger;
-import com.pgyersdk.update.PgyUpdateManager;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -364,7 +366,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         sharePreferenceTools = new SharePreferenceTools(this);
         initPoses();
 //        PgyCrashManager.register(this);
-        PgyUpdateManager.register(this);
+//        PgyUpdateManager.register(this);
     }
 
     private void initPoses() {
@@ -444,11 +446,11 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         btnLogin.requestFocus();
                     }
                 } else {
-//                    rosClientAgent.disConnect();
-//                    btnLogin.setText("登录");
-//                    eetEditText.setEnabled(true);
-//                    setContentEnable(false);
-//                    CSJToast.showToast(this, "已经连接");
+                    rosClientAgent.disConnect();
+                    btnLogin.setText("登录");
+                    eetEditText.setEnabled(true);
+                    setContentEnable(false);
+                    CSJToast.showToast(this, "已经连接");
                 }
                 break;
             case R.id.btn_shake_head:
@@ -787,13 +789,13 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 sendMessageToClient(Constants.CUT_CMD);
                 break;
             case R.id.btnPicture:
-                sendMessageToClient(Constants.PHOTO_REQ);
-                Toast.makeText(this, "正在生成图像，请等待...", Toast.LENGTH_SHORT);
+                sendMessageToClient(Constants.TEST);
+                Toast.makeText(this, "正在生成图像，请等待...", Toast.LENGTH_SHORT).show();
                 ivShowPicture.setImageResource(R.drawable.camera);
                 break;
             case R.id.btnTestAudio:
                 sendMessageToClient(Constants.OPEN_ONCE_AUDIO_START_REQ);
-                Toast.makeText(this, "请对着机器人说话!", Toast.LENGTH_SHORT);
+                Toast.makeText(this, "请对着机器人说话!", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
@@ -803,8 +805,9 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
 
 
     @Override
-    public void onEvent(ClientEvent event) {
+    public void onEvent(final ClientEvent event) {
         switch (event.eventType) {
+            case ClientConstant.EVENT_RECONNECTED:
             case ClientConstant.EVENT_CONNECT_SUCCESS:
                 mHandler.post(new Runnable() {
                     @Override
@@ -828,15 +831,17 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 });
                 break;
             case ClientConstant.EVENT_CONNECT_FAILD:
+                CsjLogger.error("EVENT_CONNECT_FAILD " + String.valueOf(event.data));
+                break;
             case ClientConstant.EVENT_CONNECT_TIME_OUT:
-
+                CsjLogger.error("EVENT_CONNECT_TIME_OUT  " + String.valueOf(event.data));
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         eetEditText.setEnabled(true);
                         btnLogin.setEnabled(true);
                         btnLogin.setProgress(0);
-                        showToast(MainActivity.this, "登录失败");
+                        showToast(MainActivity.this, "登录失败" + String.valueOf(event.data));
                         setContentEnable(false);
 
                         eetEditText.setEnabled(true);
@@ -844,6 +849,18 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         btnLogin.setText("登录");
                     }
                 });
+                break;
+            case ClientConstant.SEND_FAILED:
+                CsjLogger.error("SEND_FAILED");
+                break;
+            case ClientConstant.EVENT_DISCONNET:
+                CsjLogger.warn("EVENT_DISCONNET");
+                break;
+            case ClientConstant.EVENT_PACKET:
+                MessagePacket packet = (MessagePacket) event.data;
+                CsjLogger.warn(((CommonPacket) packet).getContentJson());
+                break;
+            default:
                 break;
         }
     }
@@ -985,7 +1002,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     protected void onDestroy() {
         client.exitClient();
         super.onDestroy();
-        PgyUpdateManager.unregister();
+//        PgyUpdateManager.unregister();
     }
 
 

@@ -6,9 +6,11 @@ import com.csjbot.rosclient.core.inter.DataReceive;
 import com.csjbot.rosclient.core.inter.IConnector;
 import com.csjbot.rosclient.core.inter.RequestListener;
 import com.csjbot.rosclient.core.util.Error;
+import com.csjbot.rosclient.core.util.PacketUtil;
 import com.csjbot.rosclient.entity.MessagePacket;
 import com.csjbot.rosclient.listener.ClientEvent;
 import com.csjbot.rosclient.utils.CsjLogger;
+import com.csjbot.rosclient.utils.NetDataTypeTransform;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Copyright (c) 2016, SuZhou CsjBot. All Rights Reserved. <br/>
@@ -59,6 +62,11 @@ public class ClientManager implements DataReceive {
 
     @Override
     public void onReceive(byte[] data) {
+        CsjLogger.debug("rec data is " + NetDataTypeTransform.dumpHex(data));
+        MessagePacket packet = PacketUtil.parser(data);
+        if (packet != null) {
+            mRequestListener.onReqeust(packet);
+        }
     }
 
     /**
@@ -124,23 +132,31 @@ public class ClientManager implements DataReceive {
         public void run() {
             CsjLogger.info("MainExecutor 启动");
             mConnector.setDataReceive(ClientManager.this);
-            int init_status = mConnector.connect(mHostName, mPort);
-//            while ((init_status = mConnector.connect(mHostName, mPort)) != Error.SocketError.CONNECT_SUCCESS) {
-//                CSJLogger2.info("connect to " + mHostName + "   " + mPort);
-//                try {
-//                    Thread.sleep(5000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+            int init_status;
+            while ((init_status = mConnector.connect(mHostName, mPort)) != Error.SocketError.CONNECT_SUCCESS) {
+//                CsjLogger.warn("connect to " + mHostName + ":" + mPort);
+                mListener.onFailed(init_status);
+
+                if (init_status != Error.SocketError.CONNECT_TIME_OUT) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            mHeartBeatThread.scheduleAtFixedRate(heartBeatRunnable, 1, ClientConstant.HEART_BEAT_INTERVAL, TimeUnit.SECONDS);
+            mListener.onSuccess();
+            mSendThread.start();
+//
+//              init_status = mConnector.connect(mHostName, mPort);
+//            if (init_status == Error.SocketError.CONNECT_SUCCESS) {
+//                mListener.onSuccess();
+//                mSendThread.start();
+//                mHeartBeatThread.scheduleAtFixedRate(heartBeatRunnable, 1, ClientConstant.HEART_BEAT_INTERVAL, TimeUnit.SECONDS);
+//            } else {
 //                mListener.onFailed(init_status);
 //            }
-
-            if (init_status == Error.SocketError.CONNECT_SUCCESS) {
-                mListener.onSuccess();
-                mSendThread.start();
-            } else {
-                mListener.onFailed(init_status);
-            }
         }
     };
 
@@ -170,6 +186,26 @@ public class ClientManager implements DataReceive {
                     mRequestListener.onEvent(new ClientEvent(ClientConstant.EVENT_CONNECT_TIME_OUT));
                 } else {
                     mListener.onFailed(init_status);
+                }
+            }
+        }
+    };
+
+    private Runnable heartBeatRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mConnector.isRunning()) {
+//                Logger.d("发送心跳");
+                if (!mConnector.sendUrgentData()) {
+                    CsjLogger.info("receiveHeartBeatCounter = " + receiveHeartBeatCounter);
+                    receiveHeartBeatCounter--;
+                    if (receiveHeartBeatCounter == 0) {
+                        mConnector.disConnect();
+                        mRequestListener.onEvent(new ClientEvent(ClientConstant.EVENT_DISCONNET));
+                        mReConnectTread.scheduleAtFixedRate(reConnectRunnable, 0, RECONNECT_INTERVAL, TimeUnit.SECONDS);
+                    }
+                } else {
+                    receiveHeartBeatCounter = MAX_HB_LIFE;
                 }
             }
         }
@@ -206,7 +242,6 @@ public class ClientManager implements DataReceive {
         while (mIsRunning) {
             synchronized (mSendPool) {
                 Iterator<PacketEntity> iterator = mSendPool.iterator();
-//                CSJLogger2.warn("onSuccess0  = " + mSendPool.size());
 
                 while (iterator.hasNext()) {
                     PacketEntity entity = iterator.next();
@@ -243,6 +278,11 @@ public class ClientManager implements DataReceive {
     public void destroy() {
         mMainExecutor.shutdown();
         mIsRunning = false;
+
+    }
+
+    public void disConnect() {
+        mConnector.disConnect();
     }
 
     static class PacketEntity {

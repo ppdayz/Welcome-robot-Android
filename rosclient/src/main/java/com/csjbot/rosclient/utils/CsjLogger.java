@@ -31,17 +31,16 @@ public class CsjLogger implements Serializable {
     private static final long serialVersionUID = 1245549555563181056L;
     private static final Logger DEFAULT_LOGGER = Logger.getLogger("RosClient");
 
-    private static boolean outPutEnable = false;
 
     // =============== debug================/
     // =============== debug================/
     public static void debug(String msg) {
-        DEFAULT_LOGGER.log(Level.FINE, "msg" + getLineOut());
+        DEFAULT_LOGGER.log(Level.INFO, msg + getLineOut());
     }
 
 
     public static void debug(String format, Object... arguments) {
-        DEFAULT_LOGGER.log(Level.FINE, format + getLineOut(), arguments);
+        DEFAULT_LOGGER.log(Level.INFO, format + getLineOut(), arguments);
     }
 
     // =============== info================/
@@ -90,10 +89,6 @@ public class CsjLogger implements Serializable {
     // =============== Debug Line================/
     // =============== Debug Line================/
 
-
-    public static void setOutPutEnable(boolean b) {
-        outPutEnable = b;
-    }
 
     private String getSimpleClassName(String name) {
         int lastIndex = name.lastIndexOf(".");

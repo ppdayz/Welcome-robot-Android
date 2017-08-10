@@ -169,7 +169,7 @@ class RosConnectorNIO implements IConnector {
                 mChannel.socket().setKeepAlive(true);
 
                 //设置超时时间
-                mChannel.socket().setSoTimeout(ClientConstant.EVENT_CONNECT_TIME_OUT);
+                mChannel.socket().setSoTimeout(ClientConstant.CONNECT_TIME_OUT);
                 mChannel.configureBlocking(false);
                 isInit = repareRead();
 
@@ -236,5 +236,36 @@ class RosConnectorNIO implements IConnector {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void disConnect() {
+        try {
+            if (mSelector != null) {
+                mSelector.close();
+            }
+            if (mChannel != null) {
+                mChannel.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean sendUrgentData() {
+        if (mChannel != null) {
+            try {
+                mChannel.socket().sendUrgentData(0xff);
+            } catch (IOException e) {
+                CsjLogger.error(e.getMessage());
+
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return true;
     }
 }

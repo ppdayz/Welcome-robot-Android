@@ -1,3 +1,5 @@
+import proguard.gradle.ProGuardTask
+
 apply plugin: 'java'
 
 sourceCompatibility = "1.7"
@@ -6,6 +8,41 @@ targetCompatibility = "1.7"
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
+
+task makeJar( type: Jar) {
+
+    //需打包的资源所在的路径集
+    def srcClassDir = [project.buildDir.absolutePath + "/libs"];
+
+    //初始化资源路径集
+    from srcClassDir
+    println "lixiang-->>"+srcClassDir
+
+    //整理输出的 Jar 文件后缀名
+    extension = "jar"
+    //最终的 Jar 文件名......如果没设置，默认为 [baseName]-[appendix]-[version]-[classifier].[extension]
+    archiveName = "lxcaySDKLib.jar"
+}
+
+
+task proguardJar(dependsOn: ['makeJar'], type: ProGuardTask) {
+    //混淆的配置文件，我的是叫 proguard.cfg，也许有人叫 proguard-project.txt
+    configuration 'proguard-rules.pro'
+//    String inJar = makeJar.archivePath.getAbsolutePath()
+    String inJar = "G:\\project\\android\\WelcomeBot-ZKHL\\rosclient\\build\\libs\\rosclient.jar";
+
+    println "lixiang inJar->>"+inJar
+
+    //输入 jar
+    injars inJar
+    //输出 jar
+    String outJar = inJar.substring(0, inJar.lastIndexOf(File.separator)) + "\\proguard-${makeJar.archiveName}"
+    outjars outJar
+    println "lixiang outJar->>"+outJar
+    //设置不删除未引用的资源(类，方法等)
+    dontshrink
+}
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

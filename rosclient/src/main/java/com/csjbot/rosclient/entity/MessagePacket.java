@@ -1,5 +1,6 @@
 package com.csjbot.rosclient.entity;
 
+import com.csjbot.rosclient.utils.CsjLogger;
 import com.csjbot.rosclient.utils.NetDataTypeTransform;
 
 /**
@@ -23,6 +24,7 @@ public abstract class MessagePacket implements Packet {
 
     private PacketHeader header = null;
     protected byte[] mContent;
+    private int messageLen;
 
     public abstract byte[] getContent();
 
@@ -32,7 +34,7 @@ public abstract class MessagePacket implements Packet {
     public byte[] encodeBytes() {
         byte[] contentData = getContent();
         byte[] header = new PacketHeader().getHeaderByte();
-        int messageLen = contentData.length;
+        messageLen = contentData.length;
         byte[] bytes = new byte[header.length + 4 + messageLen];
 
         int offset = 0;
@@ -53,13 +55,22 @@ public abstract class MessagePacket implements Packet {
             return null;
         }
         header = new PacketHeader(rawData);
+        messageLen = NetDataTypeTransform.bytesToInt2(rawData, 20);
+
+        CsjLogger.debug("messageLen is " + String.valueOf(messageLen));
+
+        if (messageLen + 24 != rawData.length) {
+            CsjLogger.error("messasgeLen is " + messageLen + " not match rawData len " + rawData.length);
+            return null;
+        }
+
+        this.mContent = new byte[messageLen];
+        System.arraycopy(rawData, 24, this.mContent, 0, messageLen);
 
         return this;
     }
 
-    public boolean checkPacket(byte[] data) {
-        // TODO: 2017/5/3 check packet
-
-        return true;
+    private boolean checkPacket(byte[] data) {
+        return data != null && data.length > 24;
     }
 }

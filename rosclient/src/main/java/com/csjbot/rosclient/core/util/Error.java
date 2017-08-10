@@ -13,6 +13,8 @@ public class Error {
         public static final int CONNECT_SUCCESS = 0;
         public static final int CONNECT_TIME_OUT = 1;
         public static final int UNKONWN_HOST = 2;
+        public static final int CONNECT_NETWORK_UNREACHABLE = 3;
+        public static final int CONNECT_OTHER_IO_ERROR = 4;
 
 
         public static final int SEND_SUCCESS = 0;

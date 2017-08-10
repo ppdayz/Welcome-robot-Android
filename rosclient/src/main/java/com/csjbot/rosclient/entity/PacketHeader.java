@@ -18,9 +18,9 @@ import com.csjbot.rosclient.utils.NetDataTypeTransform;
 * u16 m_wEvent;        //消息事件号     填 10002 吧
  */
 public class PacketHeader implements Cloneable {
-    private int m_dwSrcnode = 0;
-    private int m_dwDstnode = 0;
-    private int m_dwSrcid = 65;
+    private int m_dwSrcnode = 1;
+    private int m_dwDstnode = 1;
+    private int m_dwSrcid = 1;
     private int m_dwDstid = 25;
     private short m_wMsgType = 1;
     private short m_wEvent = 7002;
@@ -50,7 +50,6 @@ public class PacketHeader implements Cloneable {
     }
 
     public byte[] getHeaderByte() {
-        // TODO: 2017/4/25 0025 wancheng ta
         byte[] bytes = new byte[20];
         int offset = 0;
         System.arraycopy(NetDataTypeTransform.intToBytesQiPa(m_dwSrcnode), 0, bytes, offset, 4);

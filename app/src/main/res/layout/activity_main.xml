@@ -60,11 +60,10 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/flTop"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
-            android:id="@+id/flTop"
-            >
+            android:layout_weight="2">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -103,22 +102,21 @@
                 </LinearLayout>
 
             </LinearLayout>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#A2A2A2"
                 android:alpha="0.8"
-                >
-            </Button>
+                android:background="#A2A2A2"></Button>
 
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/flMiddle1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:id="@+id/flMiddle1"
-            >
+            android:layout_weight="1">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -152,21 +150,20 @@
                     android:layout_weight="1"
                     android:text="4" />
             </LinearLayout>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#A2A2A2"
                 android:alpha="0.8"
-                >
-            </Button>
+                android:background="#A2A2A2"></Button>
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/flMiddle2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:id="@+id/flMiddle2"
-            >
+            android:layout_weight="1">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -200,93 +197,87 @@
                     android:layout_weight="1"
                     android:text="8" />
             </LinearLayout>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#A2A2A2"
                 android:alpha="0.8"
-                >
-            </Button>
+                android:background="#A2A2A2"></Button>
         </FrameLayout>
-
 
 
     </LinearLayout>
 
     <FrameLayout
+        android:id="@+id/flBottom"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/flBottom"
-        >
+        android:layout_weight="1">
+
         <LinearLayout
             android:id="@+id/ll_auto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            >
+            android:orientation="horizontal">
+
             <LinearLayout
+                android:id="@+id/llModule"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:layout_marginTop="15dp"
-                android:orientation="vertical"
-                android:id="@+id/llModule"
-                >
+                android:layout_weight="1"
+                android:orientation="vertical">
+
                 <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:text="操控"
                     android:id="@+id/btnGotoHardCtrl"
-                    android:background="#5e639078"
-                    />
-
-                <Button
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:text="拍照"
+                    android:background="#5e639078"
+                    android:text="操控" />
+
+                <Button
                     android:id="@+id/btnGotoPic"
-                    android:background="#5e639078"
-                    />
-
-                <Button
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:text="打印"
+                    android:background="#5e639078"
+                    android:text="拍照" />
+
+                <Button
                     android:id="@+id/btnGotoPrint"
-                    android:background="#5e639078"
-                    />
-
-                <Button
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:text="采音"
-                    android:id="@+id/btnGotoTestAudio"
                     android:background="#5e639078"
-                    />
+                    android:text="打印" />
+
+                <Button
+                    android:id="@+id/btnGotoTestAudio"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="#5e639078"
+                    android:text="采音" />
 
             </LinearLayout>
 
             <FrameLayout
+                android:id="@+id/flModule"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="8"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="15dp"
-                android:id="@+id/flModule"
-                android:layout_marginLeft="20dp">
+                android:layout_weight="8">
 
                 <LinearLayout
                     android:id="@+id/ll_keyboard"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerHorizontal="true"
-                    android:visibility="invisible"
                     android:background="@drawable/keyboard"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
 
 
                     <LinearLayout
@@ -438,34 +429,32 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
                     android:gravity="center"
-                    android:visibility="invisible"
-                    >
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
 
 
                     <ImageView
+                        android:id="@+id/ivShowPicture"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="3"
-                        android:id="@+id/ivShowPicture"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/camera"
-                        />
+                        android:src="@drawable/camera" />
 
                     <Button
+                        android:id="@+id/btnPicture"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:id="@+id/btnPicture"
-                        android:text="拍照"
-                        />
+                        android:text="拍照" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="invisible"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
 
 
                     <android.support.v7.widget.AppCompatEditText
@@ -503,44 +492,41 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="测试步骤\n\n 1.点击开始采集按钮。 \n\n 2.对着机器人讲话。 \n\n 3.确认是否收到采集的结果。\n"
-                        />
+                        android:text="测试步骤\n\n 1.点击开始采集按钮。 \n\n 2.对着机器人讲话。 \n\n 3.确认是否收到采集的结果。\n" />
+
                     <Button
+                        android:id="@+id/btnTestAudio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="采集一次"
-                        android:id="@+id/btnTestAudio"
-                        />
+                        android:text="采集一次" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="采集结果:\n"
-                        />
+                        android:text="采集结果:\n" />
+
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:id="@+id/tvCollect"
-                        />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
-
 
 
             </FrameLayout>
 
         </LinearLayout>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#A2A2A2"
             android:alpha="0.8"
-            >
-        </Button>
-        </FrameLayout>
+            android:background="#A2A2A2"></Button>
+    </FrameLayout>
 
-    </LinearLayout>
+</LinearLayout>

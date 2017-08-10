@@ -44,5 +44,11 @@ public class ClientConstant {
     public static final int SEND_FAILED = 0x15;
 
 
-    public static final int HEART_BEAT_INTERVAL = 360000;
+    /**
+     * 心跳包间隔时间，单位秒
+     */
+    public static final int HEART_BEAT_INTERVAL = 5;
+    public static final int CONNECT_TIME_OUT = 5000;
+
+
 }
