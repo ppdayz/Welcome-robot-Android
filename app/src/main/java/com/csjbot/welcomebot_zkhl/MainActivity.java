@@ -444,12 +444,11 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         btnLogin.requestFocus();
                     }
                 } else {
-//                    rosClientAgent.destroy();
-//                    client.closeConnect();
+//                    rosClientAgent.disConnect();
 //                    btnLogin.setText("登录");
 //                    eetEditText.setEnabled(true);
 //                    setContentEnable(false);
-                    CSJToast.showToast(this, "已经连接");
+//                    CSJToast.showToast(this, "已经连接");
                 }
                 break;
             case R.id.btn_shake_head:
@@ -853,7 +852,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     public void sendMessageToClient(String message) {
 //        client.sendMsg(message);
 
-        rosClientAgent.sendMessage(PacketBuilder.createAudioPacket(message.getBytes()));
+        rosClientAgent.sendMessage(PacketBuilder.createCommonPacket(message));
     }
 
     @Override

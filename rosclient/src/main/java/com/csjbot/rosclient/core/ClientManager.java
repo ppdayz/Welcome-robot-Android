@@ -2,11 +2,13 @@ package com.csjbot.rosclient.core;
 
 import com.csjbot.rosclient.constant.ClientConstant;
 import com.csjbot.rosclient.core.inter.ActionListener;
+import com.csjbot.rosclient.core.inter.DataReceive;
+import com.csjbot.rosclient.core.inter.IConnector;
 import com.csjbot.rosclient.core.inter.RequestListener;
 import com.csjbot.rosclient.core.util.Error;
 import com.csjbot.rosclient.entity.MessagePacket;
 import com.csjbot.rosclient.listener.ClientEvent;
-import com.csjbot.rosclient.utils.CSJLogger;
+import com.csjbot.rosclient.utils.CsjLogger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +26,7 @@ import java.util.concurrent.ThreadFactory;
  * <p>
  * RosConntor的事件封装层，处理RosConnector的各种数据，承上启下
  */
-public class ClientManager {
+public class ClientManager implements DataReceive {
     private static ClientManager ourInstance = new ClientManager();
 
     public static ClientManager getInstance() {
@@ -41,7 +43,7 @@ public class ClientManager {
     private boolean mIsRunning = false;
     private ExecutorService mMainExecutor;
     private RequestListener mRequestListener;
-    private RosConnector mConnector = null;
+    private IConnector mConnector = null;
     private ScheduledExecutorService mHeartBeatThread, mReConnectTread;
     private Thread mSendThread;
     private String mHostName;
@@ -55,6 +57,7 @@ public class ClientManager {
     private ClientManager() {
     }
 
+    @Override
     public void onReceive(byte[] data) {
     }
 
@@ -119,11 +122,11 @@ public class ClientManager {
     private Runnable connectRunnable = new Runnable() {
         @Override
         public void run() {
-            CSJLogger.info("MainExecutor 启动");
-            mConnector.setClientManager(ClientManager.this);
+            CsjLogger.info("MainExecutor 启动");
+            mConnector.setDataReceive(ClientManager.this);
             int init_status = mConnector.connect(mHostName, mPort);
 //            while ((init_status = mConnector.connect(mHostName, mPort)) != Error.SocketError.CONNECT_SUCCESS) {
-//                CSJLogger.info("connect to " + mHostName + "   " + mPort);
+//                CSJLogger2.info("connect to " + mHostName + "   " + mPort);
 //                try {
 //                    Thread.sleep(5000);
 //                } catch (InterruptedException e) {
@@ -134,7 +137,6 @@ public class ClientManager {
 
             if (init_status == Error.SocketError.CONNECT_SUCCESS) {
                 mListener.onSuccess();
-                mConnector.receiveData();
                 mSendThread.start();
             } else {
                 mListener.onFailed(init_status);
@@ -157,11 +159,10 @@ public class ClientManager {
         @Override
         public void run() {
             if (!mConnector.isRunning()) {
-                CSJLogger.info("重新连接");
+                CsjLogger.info("重新连接");
 
-                mConnector.setClientManager(ClientManager.this);
+                mConnector.setDataReceive(ClientManager.this);
                 int init_status = mConnector.connect(mHostName, mPort);
-                mConnector.receiveData();
                 if (init_status == Error.SocketError.CONNECT_SUCCESS) {
                     receiveHeartBeatCounter = MAX_HB_LIFE;
                     mRequestListener.onEvent(new ClientEvent(ClientConstant.EVENT_RECONNECTED));
@@ -200,28 +201,28 @@ public class ClientManager {
      * 发送池
      */
     private void processSendPool() {
-        CSJLogger.info("processSendPool");
+        CsjLogger.info("processSendPool");
 
         while (mIsRunning) {
             synchronized (mSendPool) {
                 Iterator<PacketEntity> iterator = mSendPool.iterator();
-//                CSJLogger.warn("onSuccess0  = " + mSendPool.size());
+//                CSJLogger2.warn("onSuccess0  = " + mSendPool.size());
 
                 while (iterator.hasNext()) {
                     PacketEntity entity = iterator.next();
-                    int stat = mConnector.send(entity.packet);
+                    int stat = mConnector.sendData(entity.packet.encodeBytes());
                     iterator.remove();
 
-//                    if (stat == Error.SocketError.SEND_SUCCESS) {
-//                        entity.onSuccess();
-//                        CSJLogger.info("onSuccess");
-//
-////                        continue;
-//                    } else {
-//                        if (entity.callback != null) {
-//                            entity.onFailed(stat);
-//                        }
-//                    }
+                    if (stat == Error.SocketError.SEND_SUCCESS) {
+                        entity.onSuccess();
+                        CsjLogger.info("onSuccess");
+
+                    } else {
+                        if (entity.callback != null) {
+                            entity.onFailed(stat);
+                            CsjLogger.error("onFailed");
+                        }
+                    }
 
                     try {
                         Thread.sleep(50);
@@ -233,7 +234,7 @@ public class ClientManager {
                 try {
                     mSendPool.wait();
                 } catch (InterruptedException e) {
-                    CSJLogger.error(e.getMessage());
+                    CsjLogger.error(e.getMessage());
                 }
             }
         }

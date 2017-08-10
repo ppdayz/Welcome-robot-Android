@@ -1,7 +1,7 @@
 package com.csjbot.rosclient.utils;
 
 
-import com.csjbot.rosclient.entity.AudioPacket;
+import com.csjbot.rosclient.entity.CommonPacket;
 
 /**
  * Copyright (c) 2016, SuZhou CsjBot. All Rights Reserved. <br/>
@@ -12,9 +12,8 @@ import com.csjbot.rosclient.entity.AudioPacket;
  */
 public class PacketBuilder {
 
-    public static AudioPacket createAudioPacket(byte[] audioData) {
-        return new AudioPacket(audioData);
+    public static CommonPacket createCommonPacket(String jsonContent) {
+        return new CommonPacket(jsonContent.getBytes());
     }
-
 
 }

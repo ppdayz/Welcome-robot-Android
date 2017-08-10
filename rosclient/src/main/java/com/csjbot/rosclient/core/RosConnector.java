@@ -1,8 +1,10 @@
 package com.csjbot.rosclient.core;
 
+import com.csjbot.rosclient.constant.ClientConstant;
+import com.csjbot.rosclient.core.inter.IConnector;
+import com.csjbot.rosclient.core.inter.DataReceive;
 import com.csjbot.rosclient.core.util.Error;
-import com.csjbot.rosclient.entity.MessagePacket;
-import com.csjbot.rosclient.utils.CSJLogger;
+import com.csjbot.rosclient.utils.CsjLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,41 +13,85 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 /**
- * Copyright (c) 2016, SuZhou CsjBot. All Rights Reserved. <br/>
- * www.csjbot.com<br/>
+ * Copyright (c) 2016, SuZhou CsjBot. All Rights Reserved. <br>
+ * www.csjbot.com<br>
  * <p>
- * Created by 浦耀宗 at 2016/11/07 0007-19:19.<br/>
+ * Created by 浦耀宗 at 2016/11/07 0007-19:19.<br>
  * Email: puyz@csjbot.com
  * <p>
  * 具体的连接实现层
  */
-class RosConnector {
-    private static final int TIME_OUT = 5000;
+class RosConnector implements IConnector {
 
     private boolean isRunning;
     private Socket socket = null;
-    private ClientManager clientManager = null;
     private InputStream in;
     private OutputStream out;
+    private DataReceive dataReceive;
 
-    void setClientManager(ClientManager mgr) {
-        clientManager = mgr;
+    /**
+     * 用源生 Socket 连接 Ros
+     *
+     * @param hostName 主机名，可以是 ip（192.168.2.2） 也可以是 域名（www.baidu.com）
+     * @param port     连接的端口
+     * @return 返回状态 int： Error.SocketError.UNKONWN_HOST 未知的主机
+     * Error.SocketError.CONNECT_TIME_OUT   连接超时
+     * Error.SocketError.CONNECT_SUCCESS    连接成功
+     * @see Error.SocketError
+     */
+    @Override
+    public int connect(String hostName, int port) {
+        CsjLogger.info(getClass().getSimpleName() + " connect to host " + hostName);
+
+        InetAddress address;
+        try {
+            address = InetAddress.getByName(hostName);
+            CsjLogger.info("hostName " + hostName);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return Error.SocketError.UNKONWN_HOST;
+        }
+
+        final InetSocketAddress socketAddress = new InetSocketAddress(address.getHostAddress(), port);
+
+        try {
+            socket = new Socket();
+            socket.connect(socketAddress, ClientConstant.EVENT_CONNECT_TIME_OUT);
+            socket.setKeepAlive(true);
+            out = socket.getOutputStream();
+            if (!isRunning) {
+                isRunning = true;
+            }
+            receiveData();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Error.SocketError.CONNECT_TIME_OUT;
+        }
+
+        return Error.SocketError.CONNECT_SUCCESS;
     }
 
 
-    int send(MessagePacket packet) {
+    @Override
+    public void setDataReceive(DataReceive receive) {
+        dataReceive = receive;
+    }
+
+    @Override
+    public int sendData(byte[] data) {
         if (socket == null || out == null) {
             return Error.SocketError.SEND_SOCKET_OR_OUT_NULL;
         }
-        CSJLogger.error("MessagePacket");
 
         try {
-            out.write(packet.encodeBytes());
+            out.write(data);
             out.flush();
             return Error.SocketError.SEND_SUCCESS;
         } catch (IOException e) {
+//            e.printStackTrace();
             return Error.SocketError.SEND_IO_ERROR;
         }
     }
@@ -53,7 +99,7 @@ class RosConnector {
     /**
      * 接收数据，新建一个线程
      */
-    void receiveData() {
+    private void receiveData() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -61,11 +107,12 @@ class RosConnector {
                     try {
                         in = socket.getInputStream();
                         byte[] data = inputStreamToByte(in);
-                        if (data != null && data.length > 0) {
-                            onReceive(data);
-//                            CSJLogger.info(Arrays.toString(data));
+                        if (data != null && data.length > 0 && dataReceive != null) {
+                            if (data.length > 0) {
+                                dataReceive.onReceive(data);
+                                CsjLogger.info(Arrays.toString(data));
+                            }
                         }
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -78,13 +125,6 @@ class RosConnector {
                 }
             }
         }).start();
-    }
-
-    /**
-     * @param data
-     */
-    private void onReceive(byte[] data) {
-        clientManager.onReceive(data);
     }
 
     /**
@@ -120,7 +160,7 @@ class RosConnector {
         if (null != b) {
             int ret = inStream.read(b);
             if (ret != count) {
-                CSJLogger.info("读取 inStream 错误， 预计读取 " + count + " 实际读取 " + ret);
+                CsjLogger.info("读取 inStream 错误， 预计读取 " + count + " 实际读取 " + ret);
                 return null;
             }
         }
@@ -129,44 +169,8 @@ class RosConnector {
     }
 
 
-    /**
-     * 用源生 Socket 连接 Ros
-     *
-     * @param hostName 主机名，可以是 ip（192.168.2.2） 也可以是 域名（www.baidu.com）
-     * @param port     连接的端口
-     * @return 返回状态 int： Error.SocketError.UNKONWN_HOST 未知的主机
-     * Error.SocketError.CONNECT_TIME_OUT   连接超时
-     * Error.SocketError.CONNECT_SUCCESS    连接成功
-     * @see Error.SocketError
-     */
-    int connect(String hostName, int port) {
-        InetAddress address = null;
-        try {
-            address = InetAddress.getByName(hostName);
-            CSJLogger.info("hostName " + hostName);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return Error.SocketError.UNKONWN_HOST;
-        }
-
-        final InetSocketAddress socketAddress = new InetSocketAddress(address.getHostAddress(), port);
-
-        try {
-            socket = new Socket();
-            socket.connect(socketAddress, TIME_OUT);
-            socket.setKeepAlive(true);
-            out = socket.getOutputStream();
-            if (!isRunning) {
-                isRunning = true;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Error.SocketError.CONNECT_TIME_OUT;
-        }
-        return Error.SocketError.CONNECT_SUCCESS;
-    }
-
-    void destroy() {
+    @Override
+    public void destroy() {
         isRunning = false;
         try {
             if (socket != null) {
@@ -182,7 +186,8 @@ class RosConnector {
         }
     }
 
-    boolean isRunning() {
+    @Override
+    public boolean isRunning() {
         return isRunning;
     }
 }

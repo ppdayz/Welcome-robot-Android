@@ -1,10 +1,10 @@
 package com.csjbot.rosclient.constant;
 
 /**
- * Copyright (c) 2016, SuZhou CsjBot. All Rights Reserved. <br/>
- * www.csjbot.com<br/>
+ * Copyright (c) 2016, SuZhou CsjBot. All Rights Reserved. <br>
+ * www.csjbot.com<br>
  * <p>
- * Created by 浦耀宗 at 2016/11/07 0007-19:19.<br/>
+ * Created by 浦耀宗 at 2016/11/07 0007-19:19.<br>
  * Email: puyz@csjbot.com
  */
 public class ClientConstant {
@@ -44,5 +44,5 @@ public class ClientConstant {
     public static final int SEND_FAILED = 0x15;
 
 
-    public static final int HEART_BEAT_INTERVAL = 5;
+    public static final int HEART_BEAT_INTERVAL = 360000;
 }

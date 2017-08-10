@@ -4,10 +4,9 @@ package com.csjbot.rosclient.entity;
  * Created by Administrator on 2017/4/25 0025.
  */
 
-public class AudioPacket extends MessagePacket {
-    private byte[] mContent;
+public class CommonPacket extends MessagePacket {
 
-    public AudioPacket(byte[] content) {
+    public CommonPacket(byte[] content) {
         mContent = content;
     }
 

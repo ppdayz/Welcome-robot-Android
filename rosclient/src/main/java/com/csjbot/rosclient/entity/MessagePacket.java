@@ -22,6 +22,7 @@ import com.csjbot.rosclient.utils.NetDataTypeTransform;
 public abstract class MessagePacket implements Packet {
 
     private PacketHeader header = null;
+    protected byte[] mContent;
 
     public abstract byte[] getContent();
 
@@ -51,9 +52,7 @@ public abstract class MessagePacket implements Packet {
         if (!checkPacket(rawData)) {
             return null;
         }
-
         header = new PacketHeader(rawData);
-
 
         return this;
     }

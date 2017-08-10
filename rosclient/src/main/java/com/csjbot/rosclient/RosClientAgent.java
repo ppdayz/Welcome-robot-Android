@@ -52,8 +52,6 @@ public class RosClientAgent {
     /**
      * 创建client agent 的实例
      *
-     * @param hostName 连接的主机名 一般是 192.168.x.3
-     * @param port     端口
      * @param listener 所有事件的监听器
      * @return 返回RosClientAgent 的实例
      * @see ClientConstant
@@ -165,10 +163,6 @@ public class RosClientAgent {
 
         mClientManager = null;
         mCallbacker = null;
-    }
-
-    public void disConnect(){
-
     }
 
     public boolean isConnected() {
