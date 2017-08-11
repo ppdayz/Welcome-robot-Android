@@ -146,6 +146,24 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     FrameLayout flMiddle1;
     @BindView(R.id.flMiddle2)
     FrameLayout flMiddle2;
+    @BindView(R.id.turnHostile)
+    Button mTurnHostile;
+    @BindView(R.id.btn_gotoPoint)
+    Button mBtnGotoPoint;
+    @BindView(R.id.btn_happy)
+    Button mBtnHappy;
+    @BindView(R.id.btn_sadness)
+    Button mBtnSadness;
+    @BindView(R.id.btn_surprised)
+    Button mBtnSurprised;
+    @BindView(R.id.btn_smile)
+    Button mBtnSmile;
+    @BindView(R.id.btn_normal)
+    Button mBtnNormal;
+    @BindView(R.id.btn_anger)
+    Button mBtnAnger;
+    @BindView(R.id.ll_change)
+    LinearLayout mLlChange;
 
 
     private long lastBackPressTime;
@@ -216,18 +234,47 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             @Override
             public void run() {
                 while (!upStop) {
-//                    Logger.d(v.toString());
+                    //                    Logger.d(v.toString());
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                     sendMessageToClient(moveString);
                 }
             }
         }).start();
         return false;
+    }
+
+    @OnClick({R.id.turnHostile, R.id.btn_happy, R.id.btn_sadness, R.id.btn_surprised, R.id.btn_smile, R.id.btn_normal, R.id.btn_anger})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btn_happy:
+                sendMessageToClient(Constants.CHANGE_HAPPY);
+                showToast(this, "高兴");
+                break;
+            case R.id.btn_sadness:
+                sendMessageToClient(Constants.CHANGE_SADNESS);
+                showToast(this, "悲伤");
+                break;
+            case R.id.btn_surprised:
+                sendMessageToClient(Constants.CHANGE_SURPRISED);
+                showToast(this, "惊讶");
+                break;
+            case R.id.btn_smile:
+                sendMessageToClient(Constants.CHANGE_SMILE);
+                showToast(this, "微笑");
+                break;
+            case R.id.btn_normal:
+                sendMessageToClient(Constants.CHANGE_NORMAL);
+                showToast(this, "普通");
+                break;
+            case R.id.btn_anger:
+                sendMessageToClient(Constants.CHANGE_ANGER);
+                showToast(this, "生气");
+                break;
+        }
     }
 
 
@@ -365,8 +412,8 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
 
         sharePreferenceTools = new SharePreferenceTools(this);
         initPoses();
-//        PgyCrashManager.register(this);
-//        PgyUpdateManager.register(this);
+        //        PgyCrashManager.register(this);
+        //        PgyUpdateManager.register(this);
     }
 
     private void initPoses() {
@@ -429,7 +476,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             R.id.btn_go,
             R.id.btn_up,
             R.id.btn_stop, R.id.btn_down, R.id.btn_right, R.id.btnGotoPrint, R.id.btnGotoHardCtrl, R.id.btnGotoPic, R.id.btnPrint
-            , R.id.btnCut, R.id.btnPicture, R.id.btnTestAudio, R.id.btnGotoTestAudio})
+            , R.id.btnCut, R.id.btnPicture, R.id.btnTestAudio, R.id.btnGotoTestAudio, R.id.turnHostile})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnLogin:
@@ -437,7 +484,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 if (!rosClientAgent.isConnected()) {
                     if (checkIP(ip)) {
                         btnLogin.setEnabled(false);
-//                        client.connect(ip, this);
+                        //                        client.connect(ip, this);
                         rosClientAgent.connect(ip, 60002);
                         btnLogin.setProgress(1);
                         eetEditText.setEnabled(false);
@@ -492,9 +539,9 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                     CSJToast.showToast(this, "伸左手");
                 }
                 break;
-//               sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.DOWN));
-//                showToast(this, "弯腰");
-//                break;
+            //               sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.DOWN));
+            //                showToast(this, "弯腰");
+            //                break;
             case R.id.btn_9:
                 sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.WaistAction.UP));
                 showToast(this, "直立");
@@ -508,16 +555,16 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                         showToast(MainActivity.this, "领导好");
                     }
                 }, 500);
-//               sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.DOWN));
-//                CSJToast.showToast(this, "弯腰");
+                //               sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.DOWN));
+                //                CSJToast.showToast(this, "弯腰");
 
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-//                       sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.UP));
+                        //                       sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.WAIST, Constants.BodyAction.UP));
                         sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.UP));
 
-//                        CSJToast.showToast(MainActivity.this, "直立");
+                        //                        CSJToast.showToast(MainActivity.this, "直立");
 
                     }
                 }, 3000);
@@ -776,6 +823,10 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 showModuleIndex = 3;
                 switchShowModule();
                 break;
+            case R.id.turnHostile:
+                showModuleIndex = 4;
+                switchShowModule();
+                break;
             case R.id.btnPrint:
                 String strPrint = tvPrint.getText().toString();
                 if (strPrint.isEmpty()) {
@@ -860,7 +911,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
             case ClientConstant.EVENT_PACKET:
                 MessagePacket packet = (MessagePacket) event.data;
                 CsjLogger.warn("rec packet");
-//                CsjLogger.warn(((CommonPacket) packet).getContentJson());
+                //                CsjLogger.warn(((CommonPacket) packet).getContentJson());
                 break;
             default:
                 break;
@@ -869,7 +920,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
 
 
     public void sendMessageToClient(String message) {
-//        client.sendMsg(message);
+        //        client.sendMsg(message);
 
         rosClientAgent.sendMessage(PacketBuilder.createCommonPacket(message));
     }
@@ -909,7 +960,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
 
     @Override
     public void recMessage(String msg) {
-//        {"msg_id":"NAVI_ROBOT_MOVE_TO_REQ","pos":{"x":10,"y":235,"z":25,"rotation":157}}
+        //        {"msg_id":"NAVI_ROBOT_MOVE_TO_REQ","pos":{"x":10,"y":235,"z":25,"rotation":157}}
         Logger.d("recMessage: " + msg);
         JsonElement obj = new JsonParser().parse(msg);
         String msgType = obj.getAsJsonObject().get("msg_id").getAsString();
@@ -1004,7 +1055,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     protected void onDestroy() {
         client.exitClient();
         super.onDestroy();
-//        PgyUpdateManager.unregister();
+        //        PgyUpdateManager.unregister();
     }
 
 

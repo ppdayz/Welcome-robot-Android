@@ -259,6 +259,14 @@
                     android:layout_weight="1"
                     android:background="#5e639078"
                     android:text="采音" />
+                <Button
+                    android:id="@+id/turnHostile"
+                    android:layout_width="match_parent"
+                    android:onClick="turnHostile"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="#5e639078"
+                    android:text="变脸" />
 
             </LinearLayout>
 
@@ -426,6 +434,7 @@
 
                 </LinearLayout>
 
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -516,6 +525,106 @@
                         android:layout_height="wrap_content" />
 
                 </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_change"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:background="@mipmap/ccml_bg"
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+                        <Button
+                            android:id="@+id/btn_happy"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="高兴"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_sadness"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="悲伤"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+                        <Button
+                            android:id="@+id/btn_surprised"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="惊讶"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_smile"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="微笑"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+                        <Button
+                            android:id="@+id/btn_normal"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="普通"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+                        <Button
+                            android:id="@+id/btn_anger"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/keyboard_set_select"
+                            android:text="生气"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp" />
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
 
 
             </FrameLayout>
@@ -526,7 +635,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0.8"
-            android:background="#A2A2A2"></Button>
+            android:background="#A2A2A2"/>
     </FrameLayout>
 
 </LinearLayout>

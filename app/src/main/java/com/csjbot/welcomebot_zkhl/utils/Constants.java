@@ -18,6 +18,14 @@ public class Constants {
     public static final String ACTION_HEAD_LEFT = "{\"msg_id\":\"NAVI_ROBOT_STOP_REQ\",\"force_stop\":false}";
     public static final String ACTION_HEAD_RIGHT = "{\"msg_id\":\"NAVI_ROBOT_STOP_REQ\",\"force_stop\":false}";
 
+    /* 换表情 */
+    public static final String CHANGE_HAPPY = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5000\",\"once\":1\",\"time\":0}";
+    public static final String CHANGE_SADNESS = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5001\",\"once\":1\",\"time\":0}";
+    public static final String CHANGE_SURPRISED = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5002\",\"once\":1\",\"time\":0}";
+    public static final String CHANGE_SMILE = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5003\",\"once\":1\",\"time\":0}";
+    public static final String CHANGE_NORMAL = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5004\",\"once\":1\",\"time\":0}";
+    public static final String CHANGE_ANGER = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5005\",\"once\":1\",\"time\":0}";
+
     /* 说话 */
     public static final String SPEAK_MODE = "{\"msg_id\":\"SPEECH_TTS_REQ\",\"content\":\"%s\"}";
 
