@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -250,26 +251,32 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
         switch (view.getId()) {
             case R.id.btn_happy:
                 sendMessageToClient(Constants.CHANGE_HAPPY);
+                Log.d("TAG", "onViewClicked() returned: " + Constants.CHANGE_HAPPY);
                 showToast(this, "高兴");
                 break;
             case R.id.btn_sadness:
                 sendMessageToClient(Constants.CHANGE_SADNESS);
+                Log.d("TAG", "onViewClicked() returned: " + Constants.CHANGE_HAPPY);
                 showToast(this, "悲伤");
                 break;
             case R.id.btn_surprised:
                 sendMessageToClient(Constants.CHANGE_SURPRISED);
+                Log.d("TAG", "onViewClicked() returned: " + Constants.CHANGE_SURPRISED);
                 showToast(this, "惊讶");
                 break;
             case R.id.btn_smile:
                 sendMessageToClient(Constants.CHANGE_SMILE);
+                Log.d("TAG", "onViewClicked() returned: " + Constants.CHANGE_SMILE);
                 showToast(this, "微笑");
                 break;
             case R.id.btn_normal:
                 sendMessageToClient(Constants.CHANGE_NORMAL);
+                Log.d("TAG", "onViewClicked() returned: " + Constants.CHANGE_NORMAL);
                 showToast(this, "普通");
                 break;
             case R.id.btn_anger:
                 sendMessageToClient(Constants.CHANGE_ANGER);
+                Log.d("TAG", "onViewClicked() returned: " + Constants.CHANGE_ANGER);
                 showToast(this, "生气");
                 break;
         }

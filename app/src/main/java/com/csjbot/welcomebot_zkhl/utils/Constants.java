@@ -19,12 +19,12 @@ public class Constants {
     public static final String ACTION_HEAD_RIGHT = "{\"msg_id\":\"NAVI_ROBOT_STOP_REQ\",\"force_stop\":false}";
 
     /* 换表情 */
-    public static final String CHANGE_HAPPY = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5000\",\"once\":1\",\"time\":0}";
-    public static final String CHANGE_SADNESS = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5001\",\"once\":1\",\"time\":0}";
-    public static final String CHANGE_SURPRISED = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5002\",\"once\":1\",\"time\":0}";
-    public static final String CHANGE_SMILE = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5003\",\"once\":1\",\"time\":0}";
-    public static final String CHANGE_NORMAL = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5004\",\"once\":1\",\"time\":0}";
-    public static final String CHANGE_ANGER = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5005\",\"once\":1\",\"time\":0}";
+    public static final String CHANGE_HAPPY = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5000,\"once\":1,\"time\":0}";
+    public static final String CHANGE_SADNESS = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5001,\"once\":1,\"time\":0}";
+    public static final String CHANGE_SURPRISED = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5002,\"once\":1,\"time\":0}";
+    public static final String CHANGE_SMILE = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5003,\"once\":1,\"time\":0}";
+    public static final String CHANGE_NORMAL = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5004,\"once\":1,\"time\":0}";
+    public static final String CHANGE_ANGER = "{\"msg_id\":\"SET_ROBOT_EXPRESSION_REQ\",\"expression\":5005,\"once\":1,\"time\":0}";
 
     /* 说话 */
     public static final String SPEAK_MODE = "{\"msg_id\":\"SPEECH_TTS_REQ\",\"content\":\"%s\"}";
@@ -38,9 +38,9 @@ public class Constants {
     public static final String NAVI_ROBOT_MOVE_TO_REQ = "{\"msg_id\":\"NAVI_ROBOT_MOVE_TO_REQ\",\"pos\":{\"x\":%d,\"y\":%d,\"z\":%d,\"rotation\":%d}}";
 
     //打印和裁剪
-    public static final String PRINT_HARD_OPEN= "{\"msg_id\":\"PRINTER_OPEN_CMD\"}";
-    public static final String PRINT_TEXT_CMD= "{\"msg_id\":\"PRINTER_PRINT_TEXT_CMD\",\"text\":\"%s\"}";
-    public static final String CUT_CMD= "{\"msg_id\":\"PRINTER_PAPER_CUT_CMD\"}";
+    public static final String PRINT_HARD_OPEN = "{\"msg_id\":\"PRINTER_OPEN_CMD\"}";
+    public static final String PRINT_TEXT_CMD = "{\"msg_id\":\"PRINTER_PRINT_TEXT_CMD\",\"text\":\"%s\"}";
+    public static final String CUT_CMD = "{\"msg_id\":\"PRINTER_PAPER_CUT_CMD\"}";
 
     //拍照
     public static final String PHOTO_REQ = "{\"msg_id\":\"FACE_SNAPSHOT_REQ\"}";
