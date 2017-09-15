@@ -1,1 +1,1 @@
-include ':app',':rosclient'
+include ':app', ':rosclient', ':cameraclient'

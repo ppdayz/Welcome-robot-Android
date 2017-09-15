@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
@@ -21,27 +24,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.csjbot.cameraclient.entity.PicturePacket;
+import com.csjbot.cameraclient.listener.CameraEventListener;
 import com.csjbot.rosclient.RosClientAgent;
 import com.csjbot.rosclient.constant.ClientConstant;
-import com.csjbot.rosclient.entity.MessagePacket;
 import com.csjbot.rosclient.listener.ClientEvent;
 import com.csjbot.rosclient.listener.EventListener;
 import com.csjbot.rosclient.utils.CsjLogger;
 import com.csjbot.rosclient.utils.PacketBuilder;
 import com.csjbot.welcomebot_zkhl.entity.NaviGetPoseRspBean;
-import com.csjbot.welcomebot_zkhl.servers.ConnectWithNetty;
-import com.csjbot.welcomebot_zkhl.servers.nettyHandler.ClientListener;
-import com.csjbot.welcomebot_zkhl.servers.nettyHandler.ConnectHandler;
 import com.csjbot.welcomebot_zkhl.utils.Constants;
 import com.csjbot.welcomebot_zkhl.utils.SharePreferenceTools;
 import com.dd.processbutton.iml.ActionProcessButton;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.orhanobut.logger.Logger;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -53,7 +52,7 @@ import static com.csjbot.welcomebot_zkhl.CSJToast.showToast;
 import static com.csjbot.welcomebot_zkhl.R.id.btn_up;
 
 
-public class MainActivity extends Activity implements ConnectWithNetty.ClientStateListener, ClientListener, View.OnTouchListener, View.OnLongClickListener, EventListener {
+public class MainActivity extends Activity implements View.OnTouchListener, View.OnLongClickListener, EventListener, CameraEventListener {
 
     @BindView(R.id.eet_editText)
     AppCompatEditText eetEditText;
@@ -172,7 +171,6 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     private boolean isPutHand, isPutLeftHand;
 
     private SharedPreferences sharedPreferences = null;
-    private ConnectWithNetty client = ConnectWithNetty.getInstence();
     private MainActivityHandler mHandler = new MainActivityHandler(this);
     private NaviGetPoseRspBean.PosBean pose0, pose1, pose2, pose3, pose4;
 
@@ -306,8 +304,6 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
         ButterKnife.bind(this);
 
         btnLogin.setMode(ActionProcessButton.Mode.ENDLESS);
-        ConnectHandler.setListener(this);
-
 
         btnSay1.setText(sharedPreferences.getString("say1", "1"));
         btnSay2.setText(sharedPreferences.getString("say2", "2"));
@@ -485,7 +481,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                     if (checkIP(ip)) {
                         btnLogin.setEnabled(false);
                         //                        client.connect(ip, this);
-                        rosClientAgent.connect(ip, 60002);
+                        rosClientAgent.connect(ip, 60003);
                         btnLogin.setProgress(1);
                         eetEditText.setEnabled(false);
                     } else {
@@ -909,13 +905,57 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
                 CsjLogger.warn("EVENT_DISCONNET");
                 break;
             case ClientConstant.EVENT_PACKET:
-                MessagePacket packet = (MessagePacket) event.data;
                 CsjLogger.warn("rec packet");
                 //                CsjLogger.warn(((CommonPacket) packet).getContentJson());
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onCameraEvent(com.csjbot.cameraclient.listener.ClientEvent event) {
+        switch (event.eventType) {
+
+            case ClientConstant.EVENT_PACKET:
+                PicturePacket packet = (PicturePacket) event.data;
+                CsjLogger.warn("rec packet");
+                byte[] bitSrc = ((PicturePacket) packet).getContent();
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(bitSrc, 0, bitSrc.length);
+                getFileFromBytes(bitSrc, Environment.getExternalStorageDirectory().getAbsolutePath() + "/");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ivShowPicture.setImageBitmap(bitmap);
+                    }
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    public static File getFileFromBytes(byte[] b, String outputFile) {
+        BufferedOutputStream stream = null;
+        File file = null;
+        try {
+            file = new File(outputFile);
+            FileOutputStream fstream = new FileOutputStream(file);
+            stream = new BufferedOutputStream(fstream);
+            stream.write(b);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        return file;
     }
 
 
@@ -926,134 +966,7 @@ public class MainActivity extends Activity implements ConnectWithNetty.ClientSta
     }
 
     @Override
-    public void connectSuccess() {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                eetEditText.setEnabled(false);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("last_ip", eetEditText.getText().toString());
-                editor.apply();
-
-                //打开打印机
-                sendMessageToClient(Constants.PRINT_HARD_OPEN);
-                //初始化人脸识别模块
-                sendMessageToClient(Constants.FACE_REG_START_REQ);
-                setContentEnable(true);
-            }
-        });
-    }
-
-    @Override
-    public void connectFaild() {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                eetEditText.setEnabled(true);
-                btnLogin.setEnabled(true);
-                btnLogin.setProgress(0);
-                showToast(MainActivity.this, "登录失败");
-                setContentEnable(false);
-            }
-        });
-    }
-
-    @Override
-    public void recMessage(String msg) {
-        //        {"msg_id":"NAVI_ROBOT_MOVE_TO_REQ","pos":{"x":10,"y":235,"z":25,"rotation":157}}
-        Logger.d("recMessage: " + msg);
-        JsonElement obj = new JsonParser().parse(msg);
-        String msgType = obj.getAsJsonObject().get("msg_id").getAsString();
-        Logger.d("msgId: " + msgType);
-        switch (msgType) {
-            case "NAVI_GET_POS_RSP":
-                NaviGetPoseRspBean bean = JSON.parseObject(msg, NaviGetPoseRspBean.class);
-                Logger.d("bean " + bean.getPos().toString());
-                switch (selectPose) {
-                    case 0:
-                        pose0 = bean.getPos();
-                        sharePreferenceTools.putString("pose0", JSON.toJSONString(pose0));
-                        break;
-                    case 1:
-                        pose1 = bean.getPos();
-                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose1));
-                        break;
-                    case 2:
-                        pose2 = bean.getPos();
-                        sharePreferenceTools.putString("pose2", JSON.toJSONString(pose2));
-                        break;
-                    case 3:
-                        pose3 = bean.getPos();
-                        sharePreferenceTools.putString("pose3", JSON.toJSONString(pose3));
-                        break;
-                    case 4:
-                        pose4 = bean.getPos();
-                        sharePreferenceTools.putString("pose1", JSON.toJSONString(pose4));
-                        break;
-                    default:
-                        break;
-                }
-                selectPose = -1;
-                break;
-            case "FACE_SNAPSHOT_RESULT_RSP":
-                JsonObject cameraObj = obj.getAsJsonObject();
-                String[] recPath = cameraObj.get("file_path").getAsString().split("\\\\");
-                final String filePath = "http://" + eetEditText.getText().toString() + "/" + recPath[recPath.length - 1];
-                Logger.d("take picture path : " + filePath);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Glide.with(MainActivity.this).load(filePath).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(ivShowPicture);
-                        Toast.makeText(MainActivity.this, "拍照成功!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                break;
-            case "SPEECH_ISR_LAST_RESULT_NTF":
-                JsonObject lastSpeechObj = obj.getAsJsonObject().get("result").getAsJsonObject();
-                final String strDetectText = lastSpeechObj.get("text").getAsString();
-                Logger.d("detect audio text is " + strDetectText);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvCollect.setText(strDetectText);
-                        Toast.makeText(MainActivity.this, "您说了：" + strDetectText, Toast.LENGTH_SHORT);
-                    }
-                });
-                sendMessageToClient(Constants.OPEN_ONCE_AUDIO_STOP_REQ);
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void clientConnected() {
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                eetEditText.setEnabled(false);
-                btnLogin.setEnabled(true);
-                btnLogin.setProgress(100);
-                btnLogin.setText("断开");
-            }
-        }, 500);
-    }
-
-    @Override
-    public void clientDisConnected() {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                eetEditText.setEnabled(true);
-                btnLogin.setProgress(0);
-                btnLogin.setText("登录");
-            }
-        });
-    }
-
-    @Override
     protected void onDestroy() {
-        client.exitClient();
         super.onDestroy();
         //        PgyUpdateManager.unregister();
     }
