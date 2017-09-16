@@ -52,5 +52,5 @@ public interface IConnector {
 
     void disConnect();
 
-    boolean sendUrgentData();
+    boolean sendHeartBeat();
 }

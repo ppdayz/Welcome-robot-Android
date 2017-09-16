@@ -179,7 +179,7 @@ class RosConnectorNIO implements IConnector {
             }
         } catch (IOException e) {
             e.printStackTrace();
-           CsjLogger.error(e.getMessage());
+            CsjLogger.error(e.getMessage());
             return Errors.SocketError.CONNECT_TIME_OUT;
         } finally {
             if (!isInit) {
@@ -204,7 +204,7 @@ class RosConnectorNIO implements IConnector {
             }
         } catch (IOException e) {
             e.printStackTrace();
-           CsjLogger.error(e.getMessage());
+            CsjLogger.error(e.getMessage());
             ret = Errors.SocketError.SEND_IO_ERROR;
         }
 
@@ -254,18 +254,18 @@ class RosConnectorNIO implements IConnector {
     }
 
     @Override
-    public boolean sendUrgentData() {
-        if (mChannel != null) {
-            try {
-                mChannel.socket().sendUrgentData(0xff);
-            } catch (IOException e) {
-               CsjLogger.error(e.getMessage());
-
-                return false;
-            }
-        } else {
-            return false;
-        }
+    public boolean sendHeartBeat() {
+//        if (mChannel != null) {
+//            try {
+//                mChannel.socket().sendUrgentData(0xff);
+//            } catch (IOException e) {
+//               CsjLogger.error(e.getMessage());
+//
+//                return false;
+//            }
+//        } else {
+//            return false;
+//        }
 
         return true;
     }

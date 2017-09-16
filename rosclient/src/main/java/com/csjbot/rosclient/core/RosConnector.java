@@ -142,10 +142,14 @@ class RosConnector implements IConnector {
                         byte[] data = inputStreamToByte(in);
 
                         if (data != null && data.length > 0 && dataReceive != null) {
-                            System.arraycopy(data, 0, mBuffer, offset, data.length);
-                            offset += data.length;
-
-                            splitBuffer();
+                            if (data.length + offset >= mBuffer.length) {
+                                offset = 0;
+                                Arrays.fill(mBuffer, (byte) 0x00);
+                            } else {
+                                System.arraycopy(data, 0, mBuffer, offset, data.length);
+                                offset += data.length;
+                                splitBuffer();
+                            }
                         }
                     } catch (IOException e) {
                         CsjLogger.error(e.toString());
@@ -222,18 +226,18 @@ class RosConnector implements IConnector {
     }
 
     @Override
-    public boolean sendUrgentData() {
-        if (socket != null) {
-            try {
-                socket.sendUrgentData(0xff);
-            } catch (IOException e) {
-                CsjLogger.error(e.getMessage());
-                return false;
-            }
-        } else {
-            return false;
-        }
-
+    public boolean sendHeartBeat() {
+//        if (socket != null) {
+//            try {
+//                socket.sendUrgentData(0xff);
+//            } catch (IOException e) {
+//                CsjLogger.error(e.getMessage());
+//                return false;
+//            }
+//        } else {
+//            return false;
+//        }
+//
         return true;
     }
 

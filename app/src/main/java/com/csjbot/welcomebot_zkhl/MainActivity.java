@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.csjbot.cameraclient.CameraClientAgent;
 import com.csjbot.cameraclient.entity.PicturePacket;
 import com.csjbot.cameraclient.listener.CameraEventListener;
 import com.csjbot.rosclient.RosClientAgent;
@@ -182,6 +183,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
     private int showModuleIndex = 0;
 
     private RosClientAgent rosClientAgent = null;
+    private CameraClientAgent cameraClientAgent = null;
 
 
     /**
@@ -303,6 +305,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
         setContentView(R.layout.activity_main);
 
         rosClientAgent = RosClientAgent.createRosClientAgent(this);
+        cameraClientAgent = CameraClientAgent.createRosClientAgent(this);
 
         sharedPreferences = this.getSharedPreferences("Main", Context.MODE_PRIVATE);
 
@@ -415,6 +418,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
 
         sharePreferenceTools = new SharePreferenceTools(this);
         initPoses();
+
         //        PgyCrashManager.register(this);
         //        PgyUpdateManager.register(this);
     }
@@ -488,7 +492,8 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
                     if (checkIP(ip)) {
                         btnLogin.setEnabled(false);
                         //                        client.connect(ip, this);
-                        rosClientAgent.connect(ip, 60003);
+                        rosClientAgent.connect(ip, 60002);
+//                        cameraClientAgent.connect(ip, 60003);
                         btnLogin.setProgress(1);
                         eetEditText.setEnabled(false);
                     } else {
@@ -884,6 +889,21 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
                         btnLogin.setText("断开");
                     }
                 });
+
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (true) {
+                            sendMessageToClient(String.format(Locale.getDefault(), Constants.BODY_MOVE_MODE, Constants.BodyPart.HEAD, Constants.BodyAction.LEFT_THEN_RIGHT));
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
                 break;
             case ClientConstant.EVENT_CONNECT_FAILD:
                 CsjLogger.error("EVENT_CONNECT_FAILD " + String.valueOf(event.data));

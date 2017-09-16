@@ -258,17 +258,17 @@ class RosConnector implements IConnector {
     }
 
     @Override
-    public boolean sendUrgentData() {
-        if (socket != null) {
-            try {
-                socket.sendUrgentData(0xff);
-            } catch (IOException e) {
-                CsjLogger.error(e.getMessage());
-                return false;
-            }
-        } else {
-            return false;
-        }
+    public boolean sendHeartBeat() {
+//        if (socket != null) {
+//            try {
+//                socket.sendUrgentData(0xff);
+//            } catch (IOException e) {
+//                CsjLogger.error(e.getMessage());
+//                return false;
+//            }
+//        } else {
+//            return false;
+//        }
 
         return true;
     }
